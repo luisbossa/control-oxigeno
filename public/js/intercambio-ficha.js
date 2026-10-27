@@ -5,6 +5,10 @@
 function irAIntercambioPaciente() {
 
     if (!pacienteSeleccionado) return;
+    if (pacienteFallecido(pacienteSeleccionado)) {
+        alert("El expediente está inactivo por fallecimiento. No se pueden registrar intercambios.");
+        return;
+    }
 
 
     const paciente =

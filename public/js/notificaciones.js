@@ -32,6 +32,7 @@ function avisoDeCilindro(cilindro) {
     const numero = cilindro.numero;
 
     if (lugar.tipo === "paciente" || lugar.tipo === "servicio") {
+        if (lugar.tipo === "paciente" && pacienteFallecido(lugar.paciente)) return null;
         const urgencia = urgenciaCilindro(cilindro);
         if (urgencia.nivel !== "critico" && urgencia.nivel !== "pronto") return null;
         const quien = lugar.tipo === "paciente"

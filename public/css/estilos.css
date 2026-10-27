@@ -551,23 +551,59 @@ body[data-sesion="activa"] #pantallaAcceso { display: none; }
     font-size: 0.95rem;
 }
 
+.campo-clave { position: relative; display: block; }
+.campo-clave .campo-entrada { padding-right: 2.6rem; }
+.ver-clave {
+    position: absolute;
+    top: 50%;
+    right: 0.35rem;
+    transform: translateY(-50%);
+    display: inline-flex;
+    padding: 0.4rem;
+    border-radius: var(--radio-chico);
+    color: var(--tinta-tenue);
+}
+.ver-clave:hover { color: var(--tinta); background: var(--papel); }
+
 .boton:disabled { opacity: 0.6; cursor: progress; }
 
+/* Pie de la barra lateral: quién está conectado y, debajo, sus acciones. */
 .sesion-usuario {
     margin-top: auto;
-    display: flex;
-    align-items: center;
-    gap: 0.5rem;
-    padding: 0.85rem 0.75rem;
+    display: grid;
+    gap: 0.85rem;
+    padding: 1rem 0.9rem 1.1rem;
     border-top: 1px solid var(--linea);
 }
 
-.sesion-usuario .boton-icono { width: 32px; height: 32px; font-size: 0.95rem; }
+.sesion-persona { display: flex; align-items: center; gap: 0.7rem; }
+
+.sesion-acciones { display: flex; gap: 0.4rem; }
+
+.sesion-accion {
+    flex: 1 1 0;
+    min-width: 0;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.25rem;
+    padding: 0.5rem 0.25rem;
+    border: 1px solid var(--linea);
+    border-radius: var(--radio-chico);
+    background: var(--superficie);
+    color: var(--tinta-suave);
+    font-size: 0.72rem;
+    line-height: 1.1;
+    transition: border-color 0.15s ease, color 0.15s ease, background 0.15s ease;
+}
+.sesion-accion .icono { font-size: 1rem; }
+.sesion-accion:hover { border-color: var(--linea-fuerte); color: var(--tinta); background: var(--papel); }
+.sesion-accion-salir:hover { color: var(--rojo); border-color: #f2cfcc; background: #fcefee; }
 
 .sesion-avatar {
     flex-shrink: 0;
-    width: 32px;
-    height: 32px;
+    width: 36px;
+    height: 36px;
     display: grid;
     place-items: center;
     border-radius: 50%;
@@ -577,8 +613,8 @@ body[data-sesion="activa"] #pantallaAcceso { display: none; }
     font-weight: 600;
 }
 
-.sesion-nombre { font-size: 0.85rem; font-weight: 500; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-.sesion-rol { font-size: 0.72rem; color: var(--tinta-tenue); }
+.sesion-nombre { font-size: 0.875rem; font-weight: 500; line-height: 1.25; overflow-wrap: anywhere; }
+.sesion-rol { font-size: 0.75rem; color: var(--tinta-tenue); margin-top: 0.1rem; }
 
 .lista-usuarios {
     border: 1px solid var(--linea);
@@ -773,7 +809,11 @@ body[data-sesion="activa"] #pantallaAcceso { display: none; }
 .enlace-panel:hover { text-decoration: underline; }
 
 /* Listado de pacientes: el nombre no debe partirse en varias líneas. */
-.celda-paciente { min-width: 240px; }
+.celda-paciente { min-width: 200px; }
+/* Siete columnas más las acciones: menos aire lateral para que quepan sin desplazar. */
+.tabla-pacientes th, .tabla-pacientes td { padding-left: 0.8rem; padding-right: 0.8rem; }
+.tabla-pacientes th:first-child, .tabla-pacientes td:first-child { padding-left: 1.5rem; }
+.tabla-pacientes th:last-child, .tabla-pacientes td:last-child { padding-right: 1rem; }
 
 /* =========================================================
    NOTIFICACIONES (campana)

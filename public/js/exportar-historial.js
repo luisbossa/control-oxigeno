@@ -22,6 +22,8 @@ function exportarHistorialPaciente() {
 
         "Fecha",
 
+        "Movimiento",
+
         "Paciente",
 
         "Identificacion",
@@ -57,10 +59,26 @@ function exportarHistorialPaciente() {
     ];
 
 
+    // Una devolución definitiva usa las mismas columnas: lo devuelto va como
+    // "recibido", quien entrega como persona y el estado en observaciones.
+    const devolucion = h => [
+        formatearFechaCompleta(h.fecha),
+        `Devolución definitiva (${h.motivoDevolucion || "Devolución"})`,
+        pacienteSeleccionado.nombre,
+        pacienteSeleccionado.cedula,
+        (h.cilindrosDevueltos || []).map(c => c.numero).join(" / "),
+        "", "", "", h.fechaEntrega || "", "", "", "NO", "",
+        "Entrega", h.personaEntrega?.nombre, h.personaEntrega?.cedula,
+        h.personaRecibe,
+        `Reguladores devueltos: ${(h.reguladoresDevueltos || []).length}. Estado: ${h.estadoEquipo || ""}`
+    ];
+
     const filas =
-        pacienteSeleccionado.historial.map(h => [
+        pacienteSeleccionado.historial.map(h => h.tipoMovimiento === "Devolución definitiva" ? devolucion(h) : [
 
             formatearFechaCompleta(h.fecha),
+
+            h.tipoMovimiento || "Intercambio",
 
             pacienteSeleccionado.nombre,
 
@@ -84,11 +102,11 @@ function exportarHistorialPaciente() {
 
             h.motivoDiscrepancia,
 
-            h.personaRetira.tipo,
+            h.personaRetira?.tipo,
 
-            h.personaRetira.nombre,
+            h.personaRetira?.nombre,
 
-            h.personaRetira.cedula,
+            h.personaRetira?.cedula,
 
             h.funcionario,
 

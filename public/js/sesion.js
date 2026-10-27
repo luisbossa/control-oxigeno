@@ -18,8 +18,21 @@ function mostrarErrorAcceso(mensaje) {
     error.hidden = false;
 }
 
+// Muestra u oculta lo escrito en un campo de contraseña.
+function alternarClave(idCampo, boton, forzarOculta = false) {
+    const campo = document.getElementById(idCampo);
+    if (!campo || !boton) return;
+    const mostrar = !forzarOculta && campo.type === "password";
+    campo.type = mostrar ? "text" : "password";
+    boton.querySelector("use")?.setAttribute("href", `img/iconos.svg#${mostrar ? "eye-off" : "eye"}`);
+    boton.setAttribute("aria-label", mostrar ? "Ocultar contraseña" : "Mostrar contraseña");
+    boton.title = boton.getAttribute("aria-label");
+}
+
 function configurarFormularioAcceso() {
     const primerUso = !sistemaConfigurado;
+    // Las contraseñas siempre vuelven a ocultarse al mostrar el acceso.
+    document.querySelectorAll("#pantallaAcceso .ver-clave").forEach(boton => alternarClave(boton.previousElementSibling?.id, boton, true));
     document.getElementById("tituloAcceso").textContent = primerUso ? "Crear cuenta administradora" : "Iniciar sesión";
     document.getElementById("descripcionAcceso").textContent = primerUso
         ? "Es el primer ingreso. Esta cuenta podrá crear los usuarios del resto del equipo."

@@ -91,6 +91,13 @@ function buscarPacienteIntercambio() {
     }
 
 
+    if (pacienteFallecido(paciente)) {
+        pacienteSeleccionado = null;
+        document.getElementById("panelIntercambio").classList.add("hidden");
+        resultado.innerHTML = `<div class="p-4 bg-slate-100 border-2 border-slate-300 rounded-xl font-bold text-slate-700">${textoSeguro(paciente.nombre)}: expediente inactivo por fallecimiento. Si quedó equipo pendiente, registre la devolución desde el historial del paciente.</div>`;
+        return;
+    }
+
     pacienteSeleccionado = paciente;
 
 
@@ -338,53 +345,6 @@ function validarCilindroNuevo() {
    CONFIRMAR TRANSACCIÓN
 ========================================================= */
 
-function imprimirBoletaSalida(pacienteId, fechaRegistroCodificada) {
-    const paciente = pacientes.find(p => p.id === pacienteId);
-    if (!paciente) {
-        alert("No se encontró el paciente asociado a la boleta.");
-        return;
-    }
-
-    const fechaRegistro = decodeURIComponent(fechaRegistroCodificada);
-    const registro = (paciente.historial || []).find(r => r.fecha === fechaRegistro);
-    if (!registro) {
-        alert("No se encontró la transacción asociada a la boleta.");
-        return;
-    }
-
-    const cilindroEntregado = cilindros.find(c => c.numero === registro.cilindroEntregado);
-    const ventana = window.open("", "_blank", "width=900,height=1000");
-    if (!ventana) {
-        alert("El navegador bloqueó la ventana de impresión. Permita las ventanas emergentes e inténtelo nuevamente.");
-        return;
-    }
-
-    const seguro = valor => textoSeguro(valor === null || valor === undefined || valor === "" ? "—" : String(valor));
-    const fechaEmision = registro.fechaEmisionBoleta || registro.fecha;
-    const htmlBoleta = `<!DOCTYPE html>
-<html lang="es"><head><meta charset="UTF-8"><title>Boleta de salida de cilindro</title>
-<style>
-@page{size:A4;margin:12mm}*{box-sizing:border-box}body{font-family:Arial,sans-serif;color:#0f172a;margin:0;font-size:12px}.boleta{border:2px solid #123a70;padding:18px}.encabezado{display:flex;justify-content:space-between;gap:20px;border-bottom:3px solid #123a70;padding-bottom:12px;margin-bottom:14px}.institucion{font-size:13px;font-weight:700;color:#123a70}.titulo{text-align:right}.titulo h1{font-size:20px;margin:0;color:#123a70}.aviso{background:#eff6ff;border:1px solid #93c5fd;padding:9px;text-align:center;font-weight:700;margin-bottom:14px}.seccion{margin-top:12px}.seccion h2{font-size:12px;background:#123a70;color:white;padding:7px 9px;margin:0}.tabla{width:100%;border-collapse:collapse}.tabla td{border:1px solid #94a3b8;padding:7px;vertical-align:top}.etiqueta{font-size:9px;text-transform:uppercase;color:#475569;font-weight:800;display:block;margin-bottom:3px}.valor{font-weight:700}.firmas{display:grid;grid-template-columns:1fr 1fr;gap:34px 25px;margin-top:55px}.firma{text-align:center;border-top:1px solid #0f172a;padding-top:6px;min-height:42px}.seguridad{margin-top:45px;border:2px solid #64748b;padding:12px}.seguridad-firma{width:60%;margin:42px auto 5px;border-top:1px solid #0f172a;text-align:center;padding-top:5px}.pie{margin-top:14px;font-size:9px;color:#475569;text-align:center}.acciones{margin:15px auto;width:210px}.acciones button{width:100%;padding:11px;background:#123a70;color:white;border:0;border-radius:6px;font-weight:700;cursor:pointer}@media print{.acciones{display:none}.boleta{break-inside:avoid}}
-</style></head><body>
-<div class="acciones"><button onclick="window.print()">Imprimir / Guardar como PDF</button></div>
-<main class="boleta">
- <header class="encabezado"><div><div class="institucion">CAJA COSTARRICENSE DE SEGURO SOCIAL</div><div><strong>Área de Salud Naranjo</strong></div><div>Ingeniería y Mantenimiento</div></div><div class="titulo"><h1>BOLETA DE SALIDA</h1><div>Cilindro de oxígeno medicinal</div></div></header>
- <div class="aviso">AUTORIZACIÓN PARA UNA ÚNICA SALIDA · VÁLIDA EL DÍA DE SU EMISIÓN</div>
- <section class="seccion"><h2>DATOS DE EMISIÓN Y DEL PACIENTE</h2><table class="tabla"><tr><td><span class="etiqueta">Fecha y hora</span><span class="valor">${seguro(formatearFechaCompleta(fechaEmision))}</span></td><td><span class="etiqueta">Referencia médica</span><span class="valor">${seguro(paciente.referencia)}</span></td></tr><tr><td><span class="etiqueta">Paciente</span><span class="valor">${seguro(paciente.nombre)}</span></td><td><span class="etiqueta">Identificación</span><span class="valor">${seguro(paciente.cedula)}</span></td></tr></table></section>
- <section class="seccion"><h2>PERSONA QUE RETIRA</h2><table class="tabla"><tr><td><span class="etiqueta">Nombre completo</span><span class="valor">${seguro(registro.personaRetira?.nombre)}</span></td><td><span class="etiqueta">Identificación</span><span class="valor">${seguro(registro.personaRetira?.cedula)}</span></td><td><span class="etiqueta">Condición</span><span class="valor">${seguro(registro.personaRetira?.tipo)}</span></td></tr></table></section>
- <section class="seccion"><h2>INFORMACIÓN DEL MOVIMIENTO</h2><table class="tabla"><tr><td><span class="etiqueta">Cilindro lleno autorizado para salir</span><span class="valor">${seguro(registro.cilindroEntregado)}</span></td><td><span class="etiqueta">Tamaño</span><span class="valor">${seguro(registro.tamanoCilindroEntregado || tamanoCilindro(cilindroEntregado))}</span></td><td><span class="etiqueta">Tipo</span><span class="valor">${seguro(registro.tipoCilindroEntregado || cilindroEntregado?.tipo)}</span></td></tr><tr><td><span class="etiqueta">Cilindro vacío recibido</span><span class="valor">${seguro(registro.cilindroRecibido)}</span></td><td colspan="2"><span class="etiqueta">Discrepancia u observaciones</span><span class="valor">${seguro(registro.discrepancia ? registro.motivoDiscrepancia : registro.observaciones)}</span></td></tr></table></section>
- <section class="seccion"><h2>FUNCIONARIOS RESPONSABLES</h2><table class="tabla"><tr><td><span class="etiqueta">Gestión administrativa</span><span class="valor">${seguro(registro.funcionarioAdministrativo || registro.funcionario)}</span></td><td><span class="etiqueta">Entrega física del cilindro</span><span class="valor">${seguro(registro.funcionarioEntrega || registro.funcionario)}</span></td></tr></table></section>
- <div class="firmas"><div class="firma">Firma del funcionario de gestión administrativa<br><strong>${seguro(registro.funcionarioAdministrativo || registro.funcionario)}</strong></div><div class="firma">Firma de la persona que retira<br><strong>${seguro(registro.personaRetira?.nombre)}</strong></div></div>
- <section class="seguridad"><strong>VALIDACIÓN EXCLUSIVA DE SEGURIDAD</strong><p>Verifico que la persona, el número del cilindro y la información de esta boleta coinciden antes de autorizar la salida.</p><div class="seguridad-firma">Nombre y firma del oficial de seguridad</div></section>
- <div class="pie">Documento de control interno. La boleta debe conservarse con las firmas correspondientes.</div>
-</main></body></html>`;
-
-    ventana.document.open();
-    ventana.document.write(htmlBoleta);
-    ventana.document.close();
-    ventana.focus();
-}
-
 function confirmarTransaccion() {
 
     if (!pacienteSeleccionado) {
@@ -392,6 +352,11 @@ function confirmarTransaccion() {
         alert("Debe seleccionar un paciente.");
         return;
 
+    }
+
+    if (pacienteFallecido(pacienteSeleccionado)) {
+        alert("El expediente está inactivo por fallecimiento. Solo puede registrar devoluciones pendientes.");
+        return;
     }
 
 

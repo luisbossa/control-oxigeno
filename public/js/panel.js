@@ -51,7 +51,7 @@ function urgenciaPaciente(paciente) {
 
 function cambiosPendientesPacientes() {
     const pendientes = [];
-    pacientes.forEach(paciente => (paciente.cilindros || []).forEach(numero => {
+    pacientes.filter(paciente => !pacienteFallecido(paciente)).forEach(paciente => (paciente.cilindros || []).forEach(numero => {
         const cilindro = cilindros.find(c => c.numero === numero);
         if (!cilindro) return;
         const urgencia = urgenciaCilindro(cilindro);
@@ -133,7 +133,7 @@ function renderPanel() {
     const pendientes = cambiosPendientesPacientes();
     const criticos = pendientes.filter(p => p.urgencia.nivel === "critico").length;
     const pronto = pendientes.filter(p => p.urgencia.nivel === "pronto").length;
-    const pacientesConOxigeno = pacientes.filter(p => (p.cilindros || []).length).length;
+    const pacientesConOxigeno = pacientes.filter(p => !pacienteFallecido(p) && (p.cilindros || []).length).length;
     const cobertura = coberturaPorTipo(pendientes);
     const llenos = cobertura.reduce((total, fila) => total + fila.enBodega, 0);
     const faltantes = cobertura.reduce((total, fila) => total + fila.faltan, 0);

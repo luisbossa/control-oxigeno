@@ -125,6 +125,39 @@ function actualizarAsignacionCilindrosPaciente(paciente, nuevosNumeros, anterior
     paciente.cilindroActual = paciente.cilindros.at(-1) || null;
 }
 
+/* Datos que se imprimen en el contrato (boleta de préstamo). */
+const CAMPOS_PRESTAMO = {
+    direccion: "nuevoPacienteDireccion",
+    telefono: "nuevoPacienteTelefono",
+    retiraNombre: "nuevoPacienteRetiraNombre",
+    retiraCedula: "nuevoPacienteRetiraCedula",
+    retiraTelefono: "nuevoPacienteRetiraTelefono",
+    entregaNombre: "nuevoPacienteEntregaNombre",
+    fechaRetiroPrestamo: "nuevoPacienteFechaRetiro"
+};
+
+function cargarDatosPrestamoFormulario(paciente = {}) {
+    Object.entries(CAMPOS_PRESTAMO).forEach(([campo, id]) => {
+        document.getElementById(id).value = paciente[campo] || "";
+    });
+    if (!paciente.fechaRetiroPrestamo) document.getElementById(CAMPOS_PRESTAMO.fechaRetiroPrestamo).value = fechaHoyLocal();
+}
+
+function leerDatosPrestamoFormulario() {
+    return Object.fromEntries(Object.entries(CAMPOS_PRESTAMO).map(([campo, id]) => [campo, document.getElementById(id).value.trim()]));
+}
+
+// Equipo con el que salió el paciente la primera vez (lo usa el contrato).
+function equiposPrestamoDe(equipos) {
+    return {
+        cilindros: equipos.cilindros.map(numero => {
+            const cilindro = cilindros.find(c => c.numero === numero);
+            return { numero, tamano: tamanoCilindro(cilindro), tipo: cilindro?.tipo || "" };
+        }),
+        reguladores: equipos.reguladores.map(regulador => ({ ...regulador }))
+    };
+}
+
 function abrirNuevoPaciente() {
 
     pacienteEnEdicionId = null;
@@ -134,6 +167,7 @@ function abrirNuevoPaciente() {
     document.getElementById("nuevoPacienteNombre").value = "";
     document.getElementById("nuevoPacienteCedula").value = "";
     document.getElementById("nuevoPacienteReferencia").value = "";
+    cargarDatosPrestamoFormulario();
     document.getElementById("filasCilindrosPaciente").innerHTML = "";
     document.getElementById("filasReguladoresPaciente").innerHTML = "";
     actualizarMensajesEquiposPaciente();
@@ -174,6 +208,7 @@ function editarPaciente(id) {
     document.getElementById("nuevoPacienteNombre").value = paciente.nombre || "";
     document.getElementById("nuevoPacienteCedula").value = paciente.cedula || "";
     document.getElementById("nuevoPacienteReferencia").value = paciente.referencia || "";
+    cargarDatosPrestamoFormulario(paciente);
     document.getElementById("filasCilindrosPaciente").innerHTML = "";
     document.getElementById("filasReguladoresPaciente").innerHTML = "";
     (paciente.cilindros || []).forEach(numero => agregarCilindroPacienteFormulario(numero));
@@ -205,10 +240,15 @@ function guardarPaciente() {
         alert("Ya existe un paciente con esa identificación.");
         return;
     }
+    if (pacienteFallecido(paciente) && (equipos.cilindros.some(numero => !(paciente.cilindros || []).includes(numero)) || equipos.reguladores.length > (paciente.reguladores || []).length)) {
+        alert("No se puede asignar equipo nuevo a un expediente inactivo por fallecimiento.");
+        return;
+    }
 
     paciente.nombre = nombre;
     paciente.cedula = cedula;
     paciente.referencia = referencia;
+    Object.assign(paciente, leerDatosPrestamoFormulario());
     actualizarAsignacionCilindrosPaciente(paciente, equipos.cilindros);
     paciente.reguladores = equipos.reguladores;
     sincronizarReguladorLegacy(paciente);
@@ -298,6 +338,10 @@ function guardarNuevoPaciente() {
         cedula: cedula,
 
         referencia: referencia,
+
+        ...leerDatosPrestamoFormulario(),
+
+        equiposPrestamoInicial: equiposPrestamoDe(equipos),
 
         reguladores: equipos.reguladores,
 

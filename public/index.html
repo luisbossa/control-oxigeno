@@ -39,11 +39,17 @@
             </label>
             <label class="campo">
                 <span class="campo-etiqueta">Contraseña</span>
-                <input id="accesoClave" type="password" class="campo-entrada" autocomplete="current-password" required>
+                <span class="campo-clave">
+                    <input id="accesoClave" type="password" class="campo-entrada" autocomplete="current-password" required>
+                    <button type="button" class="ver-clave" onclick="alternarClave('accesoClave', this)" aria-label="Mostrar contraseña" title="Mostrar contraseña"><svg class="icono" aria-hidden="true"><use href="img/iconos.svg#eye"></use></svg></button>
+                </span>
             </label>
             <label id="campoConfirmarClave" class="campo" hidden>
                 <span class="campo-etiqueta">Confirmar contraseña</span>
-                <input id="accesoClaveConfirmar" type="password" class="campo-entrada" autocomplete="new-password">
+                <span class="campo-clave">
+                    <input id="accesoClaveConfirmar" type="password" class="campo-entrada" autocomplete="new-password">
+                    <button type="button" class="ver-clave" onclick="alternarClave('accesoClaveConfirmar', this)" aria-label="Mostrar contraseña" title="Mostrar contraseña"><svg class="icono" aria-hidden="true"><use href="img/iconos.svg#eye"></use></svg></button>
+                </span>
             </label>
             <p id="errorAcceso" class="acceso-error" role="alert" hidden></p>
             <button id="botonAcceso" type="submit" class="boton boton-primario w-full">Ingresar</button>
@@ -111,14 +117,18 @@
         </nav>
 
         <div class="sesion-usuario">
-            <span id="inicialesUsuario" class="sesion-avatar">--</span>
-            <div class="min-w-0 flex-1">
-                <p id="nombreUsuarioSesion" class="sesion-nombre">Usuario</p>
-                <p id="rolUsuarioSesion" class="sesion-rol">—</p>
+            <div class="sesion-persona">
+                <span id="inicialesUsuario" class="sesion-avatar">--</span>
+                <div class="min-w-0">
+                    <p id="nombreUsuarioSesion" class="sesion-nombre">Usuario</p>
+                    <p id="rolUsuarioSesion" class="sesion-rol">—</p>
+                </div>
             </div>
-            <button id="botonGestionUsuarios" type="button" class="boton-icono" title="Usuarios del sistema" aria-label="Usuarios del sistema" onclick="abrirGestionUsuarios()" hidden><svg class="icono" aria-hidden="true"><use href="img/iconos.svg#users"></use></svg></button>
-            <button type="button" class="boton-icono" title="Cambiar mi contraseña" aria-label="Cambiar mi contraseña" onclick="abrirCambioClave()"><svg class="icono" aria-hidden="true"><use href="img/iconos.svg#key-round"></use></svg></button>
-            <button type="button" class="boton-icono" title="Cerrar sesión" aria-label="Cerrar sesión" onclick="cerrarSesion()"><svg class="icono" aria-hidden="true"><use href="img/iconos.svg#log-out"></use></svg></button>
+            <div class="sesion-acciones">
+                <button id="botonGestionUsuarios" type="button" class="sesion-accion" title="Usuarios del sistema" onclick="abrirGestionUsuarios()" hidden><svg class="icono" aria-hidden="true"><use href="img/iconos.svg#users"></use></svg><span>Usuarios</span></button>
+                <button type="button" class="sesion-accion" title="Cambiar mi contraseña" onclick="abrirCambioClave()"><svg class="icono" aria-hidden="true"><use href="img/iconos.svg#key-round"></use></svg><span>Contraseña</span></button>
+                <button type="button" class="sesion-accion sesion-accion-salir" title="Cerrar sesión" onclick="cerrarSesion()"><svg class="icono" aria-hidden="true"><use href="img/iconos.svg#log-out"></use></svg><span>Salir</span></button>
+            </div>
         </div>
 
     </aside>
@@ -723,7 +733,7 @@
 
                 <div class="overflow-x-auto">
 
-                    <table class="w-full">
+                    <table class="w-full tabla-pacientes">
 
                         <thead class="bg-slate-100 border-b-2 border-slate-200">
 
@@ -796,21 +806,32 @@
                                 <span id="detalleAvatar">PN</span>
                             </div>
                             <div>
-                                <p class="encabezado-vista-seccion">Expediente</p>
+                                <p class="encabezado-vista-seccion">Expediente <span id="detalleEstadoPaciente" class="estado estado-al-dia ml-1">Activo</span></p>
                                 <h3 id="detalleNombre" class="text-xl sm:text-2xl font-black tracking-tight text-slate-900 mt-0.5">
                                     Nombre del Paciente
                                 </h3>
                                 <p id="detalleCedula" class="text-slate-500 text-sm font-mono mt-0.5">
                                     Identificación: 0-0000-0000
                                 </p>
+                                <p id="detalleTelefono" class="text-slate-500 text-sm mt-1">Teléfono: —</p>
+                                <p id="detalleDireccion" class="text-slate-500 text-sm mt-0.5 break-words">Dirección: —</p>
                             </div>
                         </div>
 
-                        <button
-                            onclick="irAIntercambioPaciente()"
-                            class="boton boton-primario">
-                            <svg class="icono" aria-hidden="true"><use href="img/iconos.svg#refresh-cw"></use></svg> Registrar intercambio
-                        </button>
+                        <div class="flex flex-wrap gap-2">
+                            <button type="button" onclick="imprimirContratoPrestamoPaciente(pacienteSeleccionado?.id)" class="boton boton-secundario">
+                                <svg class="icono" aria-hidden="true"><use href="img/iconos.svg#file-text"></use></svg> Generar contrato
+                            </button>
+                            <button type="button" onclick="abrirDevolucionPaciente()" class="boton boton-secundario">
+                                <svg class="icono" aria-hidden="true"><use href="img/iconos.svg#archive"></use></svg> Registrar devolución
+                            </button>
+                            <button
+                                id="botonIntercambioPaciente"
+                                onclick="irAIntercambioPaciente()"
+                                class="boton boton-primario">
+                                <svg class="icono" aria-hidden="true"><use href="img/iconos.svg#refresh-cw"></use></svg> Registrar intercambio
+                            </button>
+                        </div>
 
                     </div>
 
@@ -1123,6 +1144,25 @@
 
 
 <!-- ========================= -->
+<!-- DEVOLUCIÓN DE EQUIPO DEL PACIENTE -->
+<div id="modalDevolucionPaciente" class="fixed inset-0 modal-bg hidden items-center justify-center z-50 p-4 overflow-y-auto">
+    <div class="bg-white rounded-2xl w-full max-w-2xl shadow-2xl my-6">
+        <div class="p-6 border-b border-slate-200 flex justify-between items-start gap-4">
+            <div><p class="encabezado-vista-seccion">Devolución definitiva</p><h3 class="text-xl font-black text-slate-900 mt-0.5">Devolución de equipo</h3><p id="devolucionNombrePaciente" class="text-sm text-slate-500 mt-1"></p></div>
+            <button type="button" onclick="cerrarDevolucionPaciente()" class="text-slate-400 hover:text-slate-700 text-xl" aria-label="Cerrar"><svg class="icono" aria-hidden="true"><use href="img/iconos.svg#x"></use></svg></button>
+        </div>
+        <div class="p-6 space-y-5">
+            <div><p class="block text-sm font-bold text-slate-700 mb-2">Cilindros que devuelve</p><div id="devolucionCilindrosPaciente" class="space-y-2"></div></div>
+            <div><p class="block text-sm font-bold text-slate-700 mb-2">Reguladores que devuelve</p><div id="devolucionReguladoresPaciente" class="space-y-2"></div></div>
+            <div><label class="block text-sm font-bold text-slate-700 mb-2" for="devolucionMotivoPaciente">Motivo *</label><select id="devolucionMotivoPaciente" class="w-full border border-slate-300 rounded-lg px-4 py-3"><option value="Devolución">Devolución (ya no lo necesita)</option><option value="Fallecimiento">Fallecimiento del paciente</option></select><p class="text-xs text-slate-500 mt-1">Con "Fallecimiento" el expediente queda inactivo: no se podrán registrar intercambios ni asignar equipo nuevo.</p></div>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4"><div><label class="block text-sm font-bold text-slate-700 mb-2" for="devolucionEntregaNombre">Persona que entrega *</label><input id="devolucionEntregaNombre" class="w-full border border-slate-300 rounded-lg px-4 py-3"></div><div><label class="block text-sm font-bold text-slate-700 mb-2" for="devolucionEntregaCedula">Cédula de quien entrega *</label><input id="devolucionEntregaCedula" class="w-full border border-slate-300 rounded-lg px-4 py-3"></div></div>
+            <div><label class="block text-sm font-bold text-slate-700 mb-2" for="devolucionEstadoEquipo">Estado del equipo *</label><input id="devolucionEstadoEquipo" class="w-full border border-slate-300 rounded-lg px-4 py-3" placeholder="Describa el estado en que se recibe"></div>
+            <div><label class="block text-sm font-bold text-slate-700 mb-2" for="devolucionRecibeNombre">Funcionario que recibe *</label><input id="devolucionRecibeNombre" class="w-full border border-slate-300 rounded-lg px-4 py-3"></div>
+        </div>
+        <div class="p-6 border-t border-slate-200 flex justify-end gap-3"><button type="button" onclick="cerrarDevolucionPaciente()" class="boton boton-secundario">Cancelar</button><button type="button" onclick="guardarDevolucionPaciente()" class="boton boton-primario">Guardar devolución</button></div>
+    </div>
+</div>
+
 <!-- MODAL NUEVO PACIENTE -->
 <!-- ========================= -->
 
@@ -1197,6 +1237,19 @@
                     class="w-full border border-slate-300 rounded-lg px-4 py-3"
                     placeholder="REF-2026-001">
 
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4 border-t border-slate-200 pt-5">
+                <div class="md:col-span-2"><h4 class="font-black text-slate-900">Datos de la boleta de préstamo</h4><p class="text-xs text-slate-500 mt-1">Se imprimen en el contrato de préstamo del paciente.</p></div>
+                <div><label class="block text-sm font-medium text-slate-700 mb-2" for="nuevoPacienteFechaRetiro">Fecha de retiro</label><input id="nuevoPacienteFechaRetiro" type="date" class="w-full border border-slate-300 rounded-lg px-4 py-3"></div>
+                <div class="hidden md:block"></div>
+                <div><label class="block text-sm font-medium text-slate-700 mb-2" for="nuevoPacienteDireccion">Dirección del paciente</label><input id="nuevoPacienteDireccion" class="w-full border border-slate-300 rounded-lg px-4 py-3" placeholder="Dirección"></div>
+                <div><label class="block text-sm font-medium text-slate-700 mb-2" for="nuevoPacienteTelefono">Teléfono del paciente</label><input id="nuevoPacienteTelefono" type="tel" class="w-full border border-slate-300 rounded-lg px-4 py-3" placeholder="Teléfono"></div>
+                <p class="md:col-span-2 text-sm font-bold text-slate-700 border-t border-slate-200 pt-3">Persona que retira (si es distinta del paciente)</p>
+                <div><label class="block text-sm font-medium text-slate-700 mb-2" for="nuevoPacienteRetiraNombre">Persona que retira</label><input id="nuevoPacienteRetiraNombre" class="w-full border border-slate-300 rounded-lg px-4 py-3" placeholder="Nombre completo"></div>
+                <div><label class="block text-sm font-medium text-slate-700 mb-2" for="nuevoPacienteRetiraCedula">Cédula de quien retira</label><input id="nuevoPacienteRetiraCedula" class="w-full border border-slate-300 rounded-lg px-4 py-3" placeholder="Identificación"></div>
+                <div><label class="block text-sm font-medium text-slate-700 mb-2" for="nuevoPacienteRetiraTelefono">Teléfono de quien retira</label><input id="nuevoPacienteRetiraTelefono" type="tel" class="w-full border border-slate-300 rounded-lg px-4 py-3" placeholder="Teléfono"></div>
+                <div><label class="block text-sm font-medium text-slate-700 mb-2" for="nuevoPacienteEntregaNombre">Funcionario que entrega el equipo</label><input id="nuevoPacienteEntregaNombre" class="w-full border border-slate-300 rounded-lg px-4 py-3" placeholder="Nombre del funcionario"></div>
             </div>
 
             <div class="border-t border-slate-200 pt-5">
@@ -1618,6 +1671,7 @@
 <script src="js/nuevo-paciente.js"></script>
 <script src="js/nuevo-cilindro.js"></script>
 <script src="js/intercambio-ficha.js"></script>
+<script src="js/contratos-y-devoluciones.js"></script>
 <script src="js/exportar-historial.js"></script>
 <script src="js/utilidades.js"></script>
 <script src="js/notificaciones.js"></script>

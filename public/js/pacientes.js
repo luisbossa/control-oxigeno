@@ -2,6 +2,17 @@
    PACIENTES
 ========================================================= */
 
+// Un paciente fallecido conserva su expediente, pero queda inactivo.
+function pacienteFallecido(paciente) {
+    return paciente?.estadoVital === "Fallecido" ||
+        (paciente?.historial || []).some(r => r.tipoMovimiento === "Devolución definitiva" && r.motivoDevolucion === "Fallecimiento");
+}
+
+// Intercambios y entregas; las devoluciones definitivas no cuentan.
+function totalIntercambios(paciente) {
+    return (paciente.historial || []).filter(r => r.tipoMovimiento !== "Devolución definitiva").length;
+}
+
 function renderPacientes() {
 
     const filtro =
@@ -36,6 +47,7 @@ function renderPacientes() {
 
                             <p class="font-semibold text-slate-800">
                                 ${textoSeguro(paciente.nombre)}
+                                ${pacienteFallecido(paciente) ? '<span class="estado estado-sin-fecha ml-1">Fallecido · inactivo</span>' : ""}
                             </p>
 
                             <p class="text-xs text-slate-400">
@@ -80,15 +92,19 @@ function renderPacientes() {
                 </td>
 
                 <td class="px-6 py-4 text-sm text-slate-600">
-                    ${paciente.historial.length}
+                    ${totalIntercambios(paciente)}
                 </td>
 
 
                 <td class="px-6 py-4 text-right">
-                    <div class="flex flex-wrap justify-end gap-2">
+                    <div class="flex flex-nowrap items-center justify-end gap-1.5">
                         <button onclick="abrirPaciente(${paciente.id})"
                             class="text-blue-600 hover:text-blue-800 font-semibold text-sm px-2 py-1 whitespace-nowrap">
                             Ver historial <svg class="icono" aria-hidden="true"><use href="img/iconos.svg#arrow-right"></use></svg>
+                        </button>
+                        <button onclick="imprimirContratoPrestamoPaciente(${paciente.id})" title="Generar contrato de préstamo" aria-label="Generar contrato de préstamo"
+                            class="inline-flex items-center justify-center w-9 h-9 rounded-lg bg-blue-50 text-blue-700 border border-blue-200 hover:bg-blue-100 hover:text-blue-900 transition-colors">
+                            <svg class="icono" aria-hidden="true"><use href="img/iconos.svg#file-text"></use></svg>
                         </button>
                         <button onclick="editarPaciente(${paciente.id})" title="Editar paciente" aria-label="Editar paciente"
                             class="inline-flex items-center justify-center w-9 h-9 rounded-lg bg-amber-50 text-amber-700 border border-amber-200 hover:bg-amber-100 hover:text-amber-900 transition-colors">
@@ -167,6 +183,18 @@ function abrirPaciente(id) {
     document.getElementById("detalleAvatar").textContent =
         iniciales(pacienteSeleccionado.nombre);
 
+    const fallecido = pacienteFallecido(pacienteSeleccionado);
+    const etiquetaEstado = document.getElementById("detalleEstadoPaciente");
+    etiquetaEstado.textContent = fallecido ? "Fallecido · inactivo" : "Activo";
+    etiquetaEstado.className = `estado ${fallecido ? "estado-sin-fecha" : "estado-al-dia"} ml-1`;
+    document.getElementById("botonIntercambioPaciente").hidden = fallecido;
+
+    document.getElementById("detalleTelefono").textContent =
+        "Teléfono: " + (pacienteSeleccionado.telefono || "No registrado");
+
+    document.getElementById("detalleDireccion").textContent =
+        "Dirección: " + (pacienteSeleccionado.direccion || "No registrada");
+
 
     const cilindrosDelPaciente = (pacienteSeleccionado.cilindros || [])
         .map(numero => cilindros.find(c => c.numero === numero))
@@ -184,7 +212,7 @@ function abrirPaciente(id) {
 
 
     document.getElementById("detalleTotal").textContent =
-        pacienteSeleccionado.historial.length;
+        totalIntercambios(pacienteSeleccionado);
 
 
     document.getElementById("detalleReferencia").textContent =
@@ -318,7 +346,7 @@ function obtenerFechaDevolucionCilindro(numeroCilindro, registroEntrega) {
     const fechaEntregaBase = new Date(registroEntrega.fechaEntrega || registroEntrega.fecha);
 
     const devoluciones = pacienteSeleccionado.historial
-        .filter(r => r.cilindroRecibido === numeroCilindro)
+        .filter(r => r.cilindroRecibido === numeroCilindro || (r.cilindrosDevueltos || []).some(c => c.numero === numeroCilindro))
         .map(r => ({
             registro: r,
             fecha: new Date(r.fecha)
@@ -371,6 +399,28 @@ function renderHistorialPaciente() {
 
 
     historial.forEach((registro) => {
+
+        if (registro.tipoMovimiento === "Devolución definitiva") {
+            html += `
+            <div class="bg-white rounded-2xl border-2 border-slate-300 border-l-8 border-l-emerald-600 shadow-md p-5 sm:p-6">
+                <div class="flex flex-wrap justify-between items-start gap-3">
+                    <div>
+                        <p class="encabezado-vista-seccion">Devolución definitiva</p>
+                        <h4 class="font-black text-slate-900 mt-0.5">${textoSeguro(registro.motivoDevolucion === "Fallecimiento" ? "Devolución por fallecimiento" : "Devolución de equipo")}</h4>
+                        <p class="text-sm text-slate-500">${formatearFechaCompleta(registro.fecha)}</p>
+                    </div>
+                    <button onclick="imprimirBoletaDevolucionPaciente(${pacienteSeleccionado.id}, '${encodeURIComponent(registro.fecha)}')" class="boton boton-secundario boton-chico"><svg class="icono" aria-hidden="true"><use href="img/iconos.svg#printer"></use></svg> Boleta de devolución</button>
+                </div>
+                <dl class="mt-4 grid grid-cols-1 sm:grid-cols-2 gap-x-6 gap-y-2 text-sm">
+                    <div><dt class="text-xs font-bold text-slate-500">Cilindros devueltos</dt><dd class="font-mono">${(registro.cilindrosDevueltos || []).map(c => textoSeguro(c.numero)).join(", ") || "Ninguno"}</dd></div>
+                    <div><dt class="text-xs font-bold text-slate-500">Reguladores devueltos</dt><dd>${(registro.reguladoresDevueltos || []).length}</dd></div>
+                    <div><dt class="text-xs font-bold text-slate-500">Entrega</dt><dd>${textoSeguro(registro.personaEntrega?.nombre)} · <span class="font-mono">${textoSeguro(registro.personaEntrega?.cedula)}</span></dd></div>
+                    <div><dt class="text-xs font-bold text-slate-500">Recibe</dt><dd>${textoSeguro(registro.personaRecibe)}</dd></div>
+                    <div class="sm:col-span-2"><dt class="text-xs font-bold text-slate-500">Estado del equipo</dt><dd>${textoSeguro(registro.estadoEquipo)}</dd></div>
+                </dl>
+            </div>`;
+            return;
+        }
 
         const bordeLateral = registro.discrepancia ? "border-l-8 border-l-amber-500" : "border-l-8 border-l-blue-600";
         const fechaDevolucion = obtenerFechaDevolucionCilindro(registro.cilindroEntregado, registro);
