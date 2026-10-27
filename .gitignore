@@ -1,6 +1,3 @@
-node_modules/
-.vercel/
-
 # Datos de pacientes y respaldos: nunca al repositorio.
 datos/
 respaldos/
@@ -11,3 +8,5 @@ respaldos/
 .env
 .env.*
 !.env.example
+
+.vercel/
