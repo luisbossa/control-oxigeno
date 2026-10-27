@@ -3,7 +3,7 @@
   "framework": null,
   "outputDirectory": "public",
   "rewrites": [
-    { "source": "/api/:ruta*", "destination": "/api?__ruta=:ruta*" }
+    { "source": "/api/:ruta(.*)", "destination": "/api?__ruta=:ruta" }
   ],
   "headers": [
     {
