@@ -1,0 +1,9 @@
+# Nunca subir datos de pacientes ni respaldos a Vercel.
+datos/
+respaldos/
+*.db
+*.db-shm
+*.db-wal
+.env
+.env.*
+!.env.example

@@ -1,0 +1,1626 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Control de Oxígeno - CCSS</title>
+    <link rel="icon" href="favicon.ico" type="image/x-icon">
+    <link rel="stylesheet" href="css/utilidades.css">
+    <link rel="stylesheet" href="css/estilos.css">
+</head>
+
+<body data-sesion="cargando">
+
+<!-- ACCESO -->
+<div id="pantallaAcceso" class="pantalla-acceso">
+    <div class="acceso-panel">
+        <div class="acceso-marca">
+            <span class="marca-sello"><svg class="icono" aria-hidden="true"><use href="img/iconos.svg#heart-pulse"></use></svg></span>
+            <div>
+                <p class="marca-nombre">Control de oxígeno</p>
+                <p class="marca-sub">CCSS · Área de Salud Naranjo</p>
+            </div>
+        </div>
+        <form id="formularioAcceso" class="acceso-formulario" novalidate>
+            <div>
+                <h1 id="tituloAcceso" class="acceso-titulo">Iniciar sesión</h1>
+                <p id="descripcionAcceso" class="acceso-texto">Ingrese con su usuario y contraseña.</p>
+            </div>
+            <label id="camposPrimerAdministrador" class="campo" hidden>
+                <span class="campo-etiqueta">Nombre completo</span>
+                <input id="accesoNombre" class="campo-entrada" autocomplete="name">
+            </label>
+            <label class="campo">
+                <span class="campo-etiqueta">Usuario</span>
+                <input id="accesoUsuario" class="campo-entrada" autocomplete="username" autocapitalize="none" spellcheck="false" required>
+            </label>
+            <label class="campo">
+                <span class="campo-etiqueta">Contraseña</span>
+                <input id="accesoClave" type="password" class="campo-entrada" autocomplete="current-password" required>
+            </label>
+            <label id="campoConfirmarClave" class="campo" hidden>
+                <span class="campo-etiqueta">Confirmar contraseña</span>
+                <input id="accesoClaveConfirmar" type="password" class="campo-entrada" autocomplete="new-password">
+            </label>
+            <p id="errorAcceso" class="acceso-error" role="alert" hidden></p>
+            <button id="botonAcceso" type="submit" class="boton boton-primario w-full">Ingresar</button>
+        </form>
+    </div>
+</div>
+
+<div id="aplicacionPrincipal" class="flex min-h-screen">
+
+    <!-- SIDEBAR -->
+    <aside id="barraLateral" class="sidebar barra-lateral w-64 fixed left-0 top-0 bottom-0 z-40 overflow-y-auto -translate-x-full lg:translate-x-0 flex flex-col">
+
+        <div class="marca">
+            <span class="marca-sello"><svg class="icono" aria-hidden="true"><use href="img/iconos.svg#heart-pulse"></use></svg></span>
+            <div>
+                <p class="marca-nombre">Control de oxígeno</p>
+                <p class="marca-sub">CCSS · Área de Salud Naranjo</p>
+            </div>
+        </div>
+
+        <nav class="navegacion">
+
+            <p class="navegacion-grupo">Operación</p>
+
+            <button onclick="mostrarVista('panel')" id="nav-panel"
+                    class="nav-item active">
+                <span><svg class="icono" aria-hidden="true"><use href="img/iconos.svg#layout-dashboard"></use></svg></span>
+                <span>Panel del día</span>
+            </button>
+
+            <button onclick="mostrarVista('intercambio')" id="nav-intercambio"
+                    class="nav-item">
+                <span><svg class="icono" aria-hidden="true"><use href="img/iconos.svg#refresh-cw"></use></svg></span>
+                <span>Intercambio</span>
+            </button>
+
+            <button onclick="mostrarVista('pacientes')" id="nav-pacientes"
+                    class="nav-item">
+                <span><svg class="icono" aria-hidden="true"><use href="img/iconos.svg#users"></use></svg></span>
+                <span>Pacientes</span>
+            </button>
+
+            <button onclick="mostrarVista('cilindros')" id="nav-cilindros"
+                    class="nav-item">
+                <span><svg class="icono" aria-hidden="true"><use href="img/iconos.svg#cylinder"></use></svg></span>
+                <span>Inventario</span>
+            </button>
+
+            <p class="navegacion-grupo">Servicios</p>
+
+            <button onclick="toggleMenuInstitucional()" id="nav-institucionales"
+                    class="nav-item justify-between">
+                <span class="flex items-center gap-3"><span><svg class="icono" aria-hidden="true"><use href="img/iconos.svg#hospital"></use></svg></span><span>Institucionales</span></span>
+                <span id="flechaMenuInstitucional" class="navegacion-flecha transition-transform"><svg class="icono" aria-hidden="true"><use href="img/iconos.svg#chevron-down"></use></svg></span>
+            </button>
+
+            <div id="submenuInstitucional" class="hidden submenu">
+                <button onclick="mostrarInstitucional('resumen')" data-subinstitucional="resumen" class="subinstitucional">Resumen general</button>
+                <button onclick="mostrarInstitucional('ebais')" data-subinstitucional="ebais" class="subinstitucional">EBAIS</button>
+                <button onclick="mostrarInstitucional('ambulancias')" data-subinstitucional="ambulancias" class="subinstitucional">Ambulancias</button>
+                <button onclick="mostrarInstitucional('emergencias')" data-subinstitucional="emergencias" class="subinstitucional">Emergencias</button>
+                <button onclick="mostrarInstitucional('manifold')" data-subinstitucional="manifold" class="subinstitucional">Manifold</button>
+            </div>
+
+        </nav>
+
+        <div class="sesion-usuario">
+            <span id="inicialesUsuario" class="sesion-avatar">--</span>
+            <div class="min-w-0 flex-1">
+                <p id="nombreUsuarioSesion" class="sesion-nombre">Usuario</p>
+                <p id="rolUsuarioSesion" class="sesion-rol">—</p>
+            </div>
+            <button id="botonGestionUsuarios" type="button" class="boton-icono" title="Usuarios del sistema" aria-label="Usuarios del sistema" onclick="abrirGestionUsuarios()" hidden><svg class="icono" aria-hidden="true"><use href="img/iconos.svg#users"></use></svg></button>
+            <button type="button" class="boton-icono" title="Cambiar mi contraseña" aria-label="Cambiar mi contraseña" onclick="abrirCambioClave()"><svg class="icono" aria-hidden="true"><use href="img/iconos.svg#key-round"></use></svg></button>
+            <button type="button" class="boton-icono" title="Cerrar sesión" aria-label="Cerrar sesión" onclick="cerrarSesion()"><svg class="icono" aria-hidden="true"><use href="img/iconos.svg#log-out"></use></svg></button>
+        </div>
+
+    </aside>
+    <div id="fondoBarraLateral" onclick="alternarBarraLateral(false)" class="hidden lg:hidden fixed inset-0 bg-slate-900/50 z-30"></div>
+
+
+    <!-- CONTENIDO PRINCIPAL -->
+    <main class="lg:ml-64 flex-1 min-w-0">
+
+        <!-- HEADER -->
+        <header class="barra-superior h-14 sm:h-16 flex items-center justify-end gap-3 sm:gap-4 px-4 sm:px-8 sticky top-0 z-20">
+            <button onclick="alternarBarraLateral()" class="lg:hidden mr-auto boton-icono" aria-label="Abrir menú"><svg class="icono" aria-hidden="true"><use href="img/iconos.svg#menu"></use></svg></button>
+            <div class="relative">
+                <button id="botonNotificaciones" onclick="togglePanelNotificaciones(event)" class="relative boton-icono" aria-label="Abrir notificaciones">
+                    <svg class="icono" aria-hidden="true"><use href="img/iconos.svg#bell"></use></svg>
+                    <span id="contadorNotificaciones" class="hidden absolute -top-1.5 -right-1.5 min-w-[18px] h-[18px] px-1 rounded-full bg-red-600 text-white text-[10px] font-black items-center justify-center border-2 border-white">0</span>
+                </button>
+                <div id="panelNotificaciones" class="hidden fixed sm:absolute left-4 right-4 sm:left-auto sm:right-0 top-20 sm:top-14 sm:w-[390px] max-w-none sm:max-w-[calc(100vw-2rem)] bg-white border-2 border-slate-200 rounded-2xl shadow-2xl overflow-hidden z-50">
+                    <div class="p-4 border-b border-slate-200 flex items-start justify-between gap-3"><div><h3 class="font-black text-base text-slate-900">Notificaciones</h3><p id="resumenNotificaciones" class="text-xs text-slate-500 mt-0.5">Sin avisos pendientes</p></div><button onclick="togglePanelNotificaciones(event, false)" class="text-slate-400 hover:text-slate-700 text-lg"><svg class="icono" aria-hidden="true"><use href="img/iconos.svg#x"></use></svg></button></div>
+                    <div id="listaNotificaciones" class="avisos-lista"></div>
+                    <div class="avisos-pie">
+                        <button id="botonMarcarLeidas" type="button" class="boton boton-secundario boton-chico" onclick="marcarTodasNotificacionesLeidas()">Marcar leídos</button>
+                        <button id="botonActivarNotificaciones" type="button" class="boton boton-secundario boton-chico" onclick="activarNotificacionesNavegador()">Activar avisos del navegador</button>
+                        <p class="avisos-nota">Los avisos urgentes se mantienen hasta resolverse.</p>
+                    </div>
+                </div>
+            </div>
+            <div class="text-right hidden sm:block">
+                <p class="text-sm text-slate-600" id="currentDate"></p>
+                <p class="text-xs text-slate-400 font-mono" id="currentTime"></p>
+            </div>
+        </header>
+
+
+        <!-- ========================= -->
+        <!-- PANEL DEL DÍA -->
+        <!-- ========================= -->
+
+        <section id="view-panel" class="p-4 sm:p-6 lg:p-8">
+            <header class="encabezado-vista">
+                <div>
+                    <p class="encabezado-vista-seccion">Hoy</p>
+                    <h2 class="encabezado-vista-titulo">Panel del día</h2>
+                    <p id="textoPanel" class="encabezado-vista-texto"></p>
+                </div>
+                <button type="button" class="boton boton-primario" onclick="mostrarVista('intercambio')"><svg class="icono" aria-hidden="true"><use href="img/iconos.svg#refresh-cw"></use></svg> Nuevo intercambio</button>
+            </header>
+            <div id="contenidoPanel"></div>
+        </section>
+
+
+        <!-- ========================= -->
+        <!-- INTERCAMBIO -->
+        <!-- ========================= -->
+
+        <section id="view-intercambio" class="p-4 sm:p-6 lg:p-8 hidden-view">
+
+            <header class="encabezado-vista">
+                <div>
+                    <p class="encabezado-vista-seccion">Operación</p>
+                    <h2 class="encabezado-vista-titulo">Intercambio de cilindros</h2>
+                    <p class="encabezado-vista-texto">Registre la recepción del cilindro vacío y la entrega del cilindro lleno.</p>
+                </div>
+            </header>
+
+
+            <div class="max-w-5xl space-y-6">
+
+                <!-- PASO 1: BUSCADOR DE PACIENTE -->
+
+                <div class="paso">
+
+                    <div class="flex items-center gap-3 mb-6">
+
+                        <div class="paso-numero">01</div>
+
+                        <div>
+                            <h3 class="font-black text-slate-900 text-lg">Buscador de Paciente</h3>
+                            <p class="text-xs text-slate-600 font-bold">
+                                Ingrese la cédula o número de identificación para buscar automáticamente.
+                            </p>
+                        </div>
+
+                    </div>
+
+
+                    <div>
+
+                        <label class="block text-xs font-black text-slate-800 uppercase tracking-wider mb-2">
+                            Nombre o cédula del paciente
+                        </label>
+
+                        <div class="relative">
+                            <span class="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none text-slate-400 text-xl">
+                                <svg class="icono" aria-hidden="true"><use href="img/iconos.svg#search"></use></svg>
+                            </span>
+                            <input
+                                id="buscarPaciente"
+                                type="text"
+                                placeholder="Escriba el nombre o número de cédula"
+                                class="w-full border-2 border-slate-300 rounded-xl pl-11 pr-4 py-3 bg-white font-medium text-slate-900 text-base"
+                                oninput="buscarPacienteIntercambio()"
+                            >
+                        </div>
+
+                    </div>
+
+
+                    <div id="resultadoPaciente" class="mt-5"></div>
+
+                </div>
+
+
+                <!-- PASO 2 -->
+
+                <div id="panelIntercambio" class="hidden space-y-6">
+
+                    <div class="paso">
+
+                        <div class="flex items-center gap-3 mb-6">
+
+                            <div class="paso-numero">02</div>
+
+                            <div>
+                                <h3 class="font-black text-slate-900 text-lg">Recepción del cilindro</h3>
+                                <p class="text-xs text-slate-600 font-bold">
+                                    Verifique físicamente el cilindro que devuelve el paciente.
+                                </p>
+                            </div>
+
+                        </div>
+
+
+                        <input type="hidden" id="tipoTramitePaciente" value="intercambio">
+
+                        <div id="bloqueRecepcionIntercambio" class="bg-blue-100/70 border-2 border-blue-300 rounded-xl p-5 mb-5 shadow-sm">
+
+                            <label class="block text-xs font-black text-blue-900 uppercase tracking-wider mb-2">
+                                Seleccione el cilindro que viene a cambiar *
+                            </label>
+                            <select id="cilindroPacienteACambiar" onchange="seleccionarCilindroPaciente()"
+                                    class="w-full border-2 border-blue-400 rounded-xl px-4 py-3 bg-white font-black text-blue-950 mb-5">
+                                <option value="">Seleccione el cilindro...</option>
+                            </select>
+
+                            <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
+
+                                <div>
+                                    <p class="text-xs font-black text-blue-800 uppercase tracking-wider">
+                                        Cilindro seleccionado
+                                    </p>
+
+                                    <p id="cilindroActualMostrar"
+                                       class="text-2xl font-black text-blue-950 mt-1">
+                                    </p>
+                                </div>
+
+                                <div>
+                                    <p class="text-xs font-black text-blue-800 uppercase tracking-wider">
+                                        Tipo
+                                    </p>
+
+                                    <p id="tipoActualMostrar"
+                                       class="font-extrabold text-blue-900 mt-1">
+                                    </p>
+                                </div>
+
+                            </div>
+
+                        </div>
+
+
+                        <div id="bloqueCilindroDevuelto" class="grid grid-cols-1 md:grid-cols-2 gap-5">
+
+                            <div>
+
+                                <label class="block text-xs font-black text-slate-800 uppercase tracking-wider mb-2">
+                                    Número del cilindro recibido *
+                                </label>
+
+                                <input
+                                    id="cilindroDevuelto"
+                                    type="text"
+                                    placeholder="Ingrese número / serie físico"
+                                    class="w-full border-2 border-slate-400 rounded-xl px-4 py-3.5 bg-slate-50 font-black text-slate-900 text-base"
+                                    oninput="validarCilindroDevuelto()"
+                                >
+
+                            </div>
+
+
+                            <div>
+
+                                <label class="block text-xs font-black text-slate-800 uppercase tracking-wider mb-2">
+                                    Resultado de verificación
+                                </label>
+
+                                <div id="resultadoCilindro"
+                                     class="border-2 border-slate-300 rounded-xl px-4 py-3 bg-slate-100 text-sm font-bold text-slate-700">
+                                    Pendiente de ingresar cilindro
+                                </div>
+
+                            </div>
+
+                        </div>
+
+
+                        <div id="panelDiscrepancia"
+                             class="hidden mt-5 bg-amber-100 border-2 border-amber-400 rounded-xl p-5 shadow-sm">
+
+                            <div class="flex gap-3">
+
+                                <div class="text-2xl"><svg class="icono" aria-hidden="true"><use href="img/iconos.svg#triangle-alert"></use></svg></div>
+
+                                <div class="flex-1">
+
+                                    <h4 class="font-black text-amber-950 text-base">
+                                        El cilindro no coincide
+                                    </h4>
+
+                                    <p class="text-xs text-amber-900 font-bold mt-1">
+                                        El número físico recibido es diferente al cilindro
+                                        actualmente registrado para el paciente.
+                                    </p>
+
+
+                                    <label class="block text-xs font-black text-amber-950 uppercase tracking-wider mt-4 mb-2">
+                                        Motivo de la discrepancia *
+                                    </label>
+
+                                    <select
+                                        id="motivoDiscrepancia"
+                                        class="w-full border-2 border-amber-400 rounded-xl px-4 py-3 bg-white font-black text-amber-950">
+
+                                        <option value="">
+                                            Seleccione un motivo
+                                        </option>
+
+                                        <option value="Cambio realizado en otro establecimiento de salud">
+                                            Cambio realizado en otro establecimiento de salud
+                                        </option>
+
+                                        <option value="Otro motivo">
+                                            Otro motivo
+                                        </option>
+
+                                        <option value="Desconocido">
+                                            Desconocido
+                                        </option>
+
+                                    </select>
+
+                                </div>
+
+                            </div>
+
+                        </div>
+
+                    </div>
+
+
+                    <!-- PASO 3 -->
+
+                    <div class="paso">
+
+                        <div class="flex items-center gap-3 mb-6">
+
+                            <div class="paso-numero">03</div>
+
+                            <div>
+                                <h3 class="font-black text-slate-900 text-lg">
+                                    Cilindro que se entrega
+                                </h3>
+
+                                <p class="text-xs text-slate-600 font-bold">
+                                    Seleccione el cilindro disponible que será entregado.
+                                </p>
+                            </div>
+
+                        </div>
+
+
+                        <div class="grid grid-cols-1 md:grid-cols-3 gap-5">
+
+                            <div>
+
+                                <label class="block text-xs font-black text-slate-800 uppercase tracking-wider mb-2">
+                                    Número del cilindro *
+                                </label>
+
+                                <input
+                                    id="cilindroNuevo"
+                                    type="text"
+                                    placeholder="Número / serie"
+                                    class="w-full border-2 border-slate-400 rounded-xl px-4 py-3.5 bg-slate-50 font-black text-slate-900 text-base"
+                                    oninput="validarCilindroNuevo()"
+                                >
+
+                            </div>
+
+
+                            <div>
+
+                                <label class="block text-xs font-black text-slate-800 uppercase tracking-wider mb-2">
+                                    Tipo de cilindro *
+                                </label>
+
+                                <select
+                                    id="tipoCilindroNuevo"
+                                    class="w-full border-2 border-slate-400 rounded-xl px-4 py-3.5 bg-slate-50 font-black text-slate-900 text-base">
+
+                                    <option value="">
+                                        Seleccione
+                                    </option>
+
+                                    <option value="220 PC - Rosca">
+                                        220 PC - Rosca
+                                    </option>
+
+                                    <option value="30 PC - Pin Index">
+                                        30 PC - Pin Index
+                                    </option>
+
+                                    <option value="30 PC - Rosca">
+                                        30 PC - Rosca
+                                    </option>
+
+                                </select>
+
+                            </div>
+
+                            <div>
+                                <label class="block text-xs font-black text-slate-800 uppercase tracking-wider mb-2">
+                                    Tamaño del cilindro *
+                                </label>
+                                <select id="tamanoCilindroNuevo"
+                                    class="w-full border-2 border-slate-400 rounded-xl px-4 py-3.5 bg-slate-50 font-black text-slate-900 text-base">
+                                    <option value="">Seleccione</option>
+                                    <option value="Grande">Grande</option>
+                                    <option value="Pequeño">Pequeño</option>
+                                </select>
+                            </div>
+
+                        </div>
+
+
+                        <div id="resultadoCilindroNuevo" class="mt-4"></div>
+
+                    </div>
+
+
+                    <!-- PASO 4 -->
+
+                    <div class="paso">
+
+                        <div class="flex items-center gap-3 mb-6">
+
+                            <div class="paso-numero">04</div>
+
+                            <div>
+                                <h3 class="font-black text-slate-900 text-lg">
+                                    Persona que retira
+                                </h3>
+
+                                <p class="text-xs text-slate-600 font-bold">
+                                    Registre a la persona que físicamente recibe el cilindro.
+                                </p>
+                            </div>
+
+                        </div>
+
+
+                        <div class="grid grid-cols-1 md:grid-cols-3 gap-5">
+
+                            <div>
+
+                                <label class="block text-xs font-black text-slate-800 uppercase tracking-wider mb-2">
+                                    Tipo de persona *
+                                </label>
+
+                                <select
+                                    id="tipoPersona"
+                                    class="w-full border-2 border-slate-400 rounded-xl px-4 py-3.5 bg-slate-50 font-black text-slate-900 text-base">
+
+                                    <option value="">
+                                        Seleccione
+                                    </option>
+
+                                    <option value="Paciente">
+                                        Paciente
+                                    </option>
+
+                                    <option value="Familiar">
+                                        Familiar
+                                    </option>
+
+                                    <option value="Encargado">
+                                        Encargado
+                                    </option>
+
+                                    <option value="Otro">
+                                        Otro
+                                    </option>
+
+                                </select>
+
+                            </div>
+
+
+                            <div>
+
+                                <label class="block text-xs font-black text-slate-800 uppercase tracking-wider mb-2">
+                                    Nombre completo *
+                                </label>
+
+                                <input
+                                    id="nombreReceptor"
+                                    type="text"
+                                    placeholder="Nombre completo"
+                                    class="w-full border-2 border-slate-400 rounded-xl px-4 py-3.5 bg-slate-50 font-black text-slate-900 text-base"
+                                >
+
+                            </div>
+
+
+                            <div>
+
+                                <label class="block text-xs font-black text-slate-800 uppercase tracking-wider mb-2">
+                                    Identificación *
+                                </label>
+
+                                <input
+                                    id="cedulaReceptor"
+                                    type="text"
+                                    placeholder="Número de identificación"
+                                    class="w-full border-2 border-slate-400 rounded-xl px-4 py-3.5 bg-slate-50 font-black text-slate-900 text-base"
+                                >
+
+                            </div>
+
+                        </div>
+
+                    </div>
+
+
+                    <!-- PASO 5: FUNCIONARIOS RESPONSABLES -->
+                    <div class="paso">
+                        <div class="flex items-center gap-3 mb-6">
+                            <div class="paso-numero">05</div>
+                            <div>
+                                <h3 class="font-black text-slate-900 text-lg">Funcionarios responsables</h3>
+                                <p class="text-xs text-slate-600 font-bold">Registre por separado al funcionario que realiza la gestión administrativa y al funcionario que ejecuta físicamente la entrega.</p>
+                            </div>
+                        </div>
+
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
+                            <div class="bg-blue-50/50 border-2 border-blue-200 rounded-xl p-5 shadow-sm">
+                                <div class="flex items-center gap-3 mb-4">
+                                    <div class="w-10 h-10 rounded-xl bg-blue-600 text-white flex items-center justify-center"><svg class="icono" aria-hidden="true"><use href="img/iconos.svg#clipboard-list"></use></svg></div>
+                                    <div>
+                                        <p class="font-black text-blue-950">Gestión administrativa</p>
+                                        <p class="text-xs font-bold text-slate-600">Funcionario que registra y gestiona la entrega</p>
+                                    </div>
+                                </div>
+                                <label class="block text-xs font-black text-slate-800 uppercase tracking-wider mb-2">Funcionario administrativo *</label>
+                                <input id="funcionarioAdministrativo" type="text" value="" placeholder="Nombre completo del funcionario" class="w-full border-2 border-slate-400 rounded-xl px-4 py-3.5 bg-white font-black text-slate-900 text-base">
+                            </div>
+
+                            <div class="bg-blue-50/50 border-2 border-blue-200 rounded-xl p-5 shadow-sm">
+                                <div class="flex items-center gap-3 mb-4">
+                                    <div class="w-10 h-10 rounded-xl bg-blue-600 text-white flex items-center justify-center"><svg class="icono" aria-hidden="true"><use href="img/iconos.svg#package"></use></svg></div>
+                                    <div>
+                                        <p class="font-black text-blue-950">Entrega física</p>
+                                        <p class="text-xs font-bold text-slate-600">Funcionario que retira, entrega y guarda el vacío</p>
+                                    </div>
+                                </div>
+                                <label class="block text-xs font-black text-slate-800 uppercase tracking-wider mb-2">Funcionario de entrega *</label>
+                                <input id="funcionarioEntrega" type="text" value="" placeholder="Nombre completo del funcionario" class="w-full border-2 border-slate-400 rounded-xl px-4 py-3.5 bg-white font-black text-slate-900 text-base">
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- PASO 6 -->
+
+                    <div class="paso">
+
+                        <div class="flex items-center gap-3 mb-6">
+
+                            <div class="paso-numero">06</div>
+
+                            <div>
+                                <h3 class="font-black text-slate-900 text-lg">
+                                    Finalizar intercambio
+                                </h3>
+
+                                <p class="text-xs text-slate-600 font-bold">
+                                    Revise la información antes de guardar.
+                                </p>
+                            </div>
+
+                        </div>
+
+
+                        <div>
+
+                            <label class="block text-xs font-black text-slate-800 uppercase tracking-wider mb-2">
+                                Observaciones
+                            </label>
+
+                            <textarea
+                                id="observaciones"
+                                rows="3"
+                                placeholder="Observaciones adicionales..."
+                                class="w-full border-2 border-slate-400 rounded-xl px-4 py-3.5 bg-slate-50 font-black text-slate-900 text-base"></textarea>
+
+                        </div>
+
+
+                        <div class="mt-5 bg-blue-100/70 border-2 border-blue-300 rounded-xl p-4 shadow-sm">
+
+                            <div class="flex gap-3">
+
+                                <div class="text-xl"><svg class="icono" aria-hidden="true"><use href="img/iconos.svg#info"></use></svg></div>
+
+                                <div>
+
+                                    <p class="font-black text-blue-950 text-sm">
+                                        Trazabilidad automática
+                                    </p>
+
+                                    <p class="text-xs text-blue-900 font-bold mt-0.5">
+                                        El sistema registrará automáticamente la fecha,
+                                        hora y funcionario que realiza la entrega.
+                                    </p>
+
+                                </div>
+
+                            </div>
+
+                        </div>
+
+
+                        <div class="flex justify-end gap-3 mt-6">
+
+                            <button
+                                onclick="limpiarIntercambio()"
+                                class="px-6 py-3.5 border-2 border-slate-400 rounded-xl text-slate-800 font-black hover:bg-slate-100">
+                                Cancelar
+                            </button>
+
+                            <button
+                                onclick="confirmarTransaccion()"
+                                class="px-8 py-3.5 bg-blue-600 hover:bg-blue-500 text-white rounded-xl font-black shadow-xl text-base">
+                                <svg class="icono" aria-hidden="true"><use href="img/iconos.svg#check"></use></svg> Confirmar Transacción
+                            </button>
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+        </section>
+
+
+        <!-- ========================= -->
+        <!-- PACIENTES -->
+        <!-- ========================= -->
+
+        <section id="view-pacientes" class="p-4 sm:p-6 lg:p-8 hidden-view">
+
+            <header class="encabezado-vista">
+                <div>
+                    <p class="encabezado-vista-seccion">Directorio</p>
+                    <h2 class="encabezado-vista-titulo">Pacientes</h2>
+                    <p class="encabezado-vista-texto">Listado general, registro de pacientes y consulta de historiales.</p>
+                </div>
+                <button
+                    onclick="abrirNuevoPaciente()"
+                    class="boton boton-primario">
+                    <svg class="icono" aria-hidden="true"><use href="img/iconos.svg#plus"></use></svg> Nuevo paciente
+                </button>
+            </header>
+
+
+            <div class="card p-5 mb-5 border-2 border-slate-300 shadow-md">
+
+                <input
+                    id="buscarPacientes"
+                    type="text"
+                    placeholder="Buscar por nombre o identificación..."
+                    class="w-full md:w-96 border-2 border-slate-300 rounded-xl px-4 py-3 font-bold text-slate-800 bg-slate-50/50"
+                    oninput="renderPacientes()"
+                >
+
+            </div>
+
+
+            <div class="card overflow-hidden border-2 border-slate-300 shadow-md">
+
+                <div class="overflow-x-auto">
+
+                    <table class="w-full">
+
+                        <thead class="bg-slate-100 border-b-2 border-slate-200">
+
+                            <tr>
+
+                                <th class="text-left px-6 py-4 text-xs font-black text-slate-700 uppercase tracking-wider">
+                                    Paciente
+                                </th>
+
+                                <th class="text-left px-6 py-4 text-xs font-black text-slate-700 uppercase tracking-wider">
+                                    Identificación
+                                </th>
+
+                                <th class="text-left px-6 py-4 text-xs font-black text-slate-700 uppercase tracking-wider">
+                                    Cilindro actual
+                                </th>
+
+                                <th class="text-left px-6 py-4 text-xs font-black text-slate-700 uppercase tracking-wider">
+                                    Próximo cambio
+                                </th>
+
+                                <th class="text-left px-6 py-4 text-xs font-black text-slate-700 uppercase tracking-wider">
+                                    Regulador prestado
+                                </th>
+
+                                <th class="text-left px-6 py-4 text-xs font-black text-slate-700 uppercase tracking-wider">
+                                    Intercambios
+                                </th>
+
+                                <th class="text-right px-6 py-4 text-xs font-black text-slate-700 uppercase tracking-wider">
+                                    Acción
+                                </th>
+
+                            </tr>
+
+                        </thead>
+
+                        <tbody id="tablaPacientes"></tbody>
+
+                    </table>
+
+                </div>
+
+            </div>
+
+        </section>
+
+
+        <!-- ========================= -->
+        <!-- FICHA PACIENTE -->
+        <!-- ========================= -->
+
+        <section id="view-paciente-detalle" class="p-4 sm:p-6 lg:p-8 hidden-view">
+
+            <div class="mb-6">
+
+                <button
+                    onclick="volverAPacientes()"
+                    class="text-blue-600 hover:text-blue-800 text-sm font-medium mb-4 flex items-center gap-1 font-bold">
+                    <svg class="icono" aria-hidden="true"><use href="img/iconos.svg#arrow-left"></use></svg> Volver a pacientes
+                </button>
+
+                <!-- TARJETA PRINCIPAL DEL PACIENTE -->
+                <div class="card ficha-paciente p-5 sm:p-6 mb-6">
+
+                    <div class="flex flex-col md:flex-row md:items-center justify-between gap-6">
+
+                        <div class="flex items-center gap-5">
+                            <div class="w-14 h-14 rounded-full bg-blue-50 text-blue-700 flex items-center justify-center font-black text-lg">
+                                <span id="detalleAvatar">PN</span>
+                            </div>
+                            <div>
+                                <p class="encabezado-vista-seccion">Expediente</p>
+                                <h3 id="detalleNombre" class="text-xl sm:text-2xl font-black tracking-tight text-slate-900 mt-0.5">
+                                    Nombre del Paciente
+                                </h3>
+                                <p id="detalleCedula" class="text-slate-500 text-sm font-mono mt-0.5">
+                                    Identificación: 0-0000-0000
+                                </p>
+                            </div>
+                        </div>
+
+                        <button
+                            onclick="irAIntercambioPaciente()"
+                            class="boton boton-primario">
+                            <svg class="icono" aria-hidden="true"><use href="img/iconos.svg#refresh-cw"></use></svg> Registrar intercambio
+                        </button>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+
+            <!-- TARJETAS DE RESUMEN SUPERIOR -->
+            <div class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-5 mb-6">
+
+                <div class="card p-5 border-2 border-emerald-200 bg-emerald-50 text-emerald-950">
+                    <p class="text-xs font-extrabold text-emerald-800 uppercase tracking-wider flex items-center gap-1.5">
+                        <span><svg class="icono icono-relleno icono-verde" aria-hidden="true"><use href="img/iconos.svg#circle"></use></svg></span> Cilindros en préstamo
+                    </p>
+                    <div id="detalleCilindro" class="mt-3 space-y-2"></div>
+                    <p id="detalleTipoCilindro" class="text-xs font-bold text-emerald-700 mt-1">
+                    </p>
+                </div>
+
+
+                <div class="card p-5 border-2 border-slate-200 shadow-sm">
+                    <p class="text-xs font-extrabold text-slate-500 uppercase tracking-wider">
+                        Total de Intercambios
+                    </p>
+                    <p id="detalleTotal" class="text-2xl font-black text-slate-800 mt-2">
+                    </p>
+                </div>
+
+
+                <div class="card p-5 border-2 border-slate-200 shadow-sm">
+                    <p class="text-xs font-extrabold text-slate-500 uppercase tracking-wider">
+                        Referencia Médica
+                    </p>
+                    <p id="detalleReferencia" class="text-lg font-black text-slate-800 mt-2">
+                    </p>
+                </div>
+
+                <div class="card p-5 border-2 border-amber-300 bg-amber-50 shadow-sm">
+                    <p class="text-xs font-extrabold text-amber-700 uppercase tracking-wider">
+                        Reguladores de oxígeno prestados
+                    </p>
+                    <p id="detalleRegulador" class="text-lg font-black text-slate-800 mt-2">
+                        Sin regulador
+                    </p>
+                    <p id="detalleReguladorSerie" class="text-xs font-bold text-slate-500 mt-1">
+                        Número de serie: —
+                    </p>
+                    <button
+                        onclick="editarPaciente(pacienteSeleccionado.id)"
+                        class="mt-3 text-sm font-extrabold text-blue-700 hover:text-blue-900">
+                        Editar cilindros y reguladores
+                    </button>
+                </div>
+
+            </div>
+
+            <div id="panelEditarRegulador" class="card p-5 mb-6 border-2 border-amber-300 bg-amber-50 hidden">
+                <div class="flex flex-col lg:flex-row lg:items-end gap-4">
+                    <div class="flex-1">
+                        <label class="block text-sm font-bold text-slate-700 mb-2">¿El paciente tiene un regulador de oxígeno prestado?</label>
+                        <select id="editarReguladorPrestado" onchange="actualizarCamposReguladorEdicion()" class="w-full border-2 border-slate-300 rounded-xl px-4 py-3 bg-white font-semibold">
+                            <option value="no">No</option>
+                            <option value="si">Sí</option>
+                        </select>
+                    </div>
+                    <div id="editarReguladorDetalles" class="flex-[2] grid grid-cols-1 md:grid-cols-2 gap-4 hidden">
+                        <div>
+                            <label class="block text-sm font-bold text-slate-700 mb-2">Tipo de regulador *</label>
+                            <select id="editarReguladorTipo" class="w-full border-2 border-slate-300 rounded-xl px-4 py-3 bg-white font-semibold">
+                                <option value="">Seleccione...</option>
+                                <option value="Rosca">Rosca</option>
+                                <option value="Pin">Pin</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label class="block text-sm font-bold text-slate-700 mb-2">Número de serie <span class="font-normal text-slate-500">(si aplica)</span></label>
+                            <input id="editarReguladorSerie" class="w-full border-2 border-slate-300 rounded-xl px-4 py-3" placeholder="Ej. REG-00125">
+                        </div>
+                    </div>
+                    <div class="flex gap-2">
+                        <button onclick="guardarReguladorPaciente()" class="px-5 py-3 bg-blue-600 hover:bg-blue-700 text-white rounded-xl font-extrabold">Guardar</button>
+                        <button onclick="toggleEditarRegulador(false)" class="px-5 py-3 border-2 border-slate-300 bg-white rounded-xl font-bold">Cancelar</button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- ESTADO DE VIGENCIA DEL CILINDRO ACTUAL -->
+            <div id="alertaVigenciaPaciente" class="mb-6"></div>
+
+            <div class="card p-6 border-2 border-slate-300 shadow-md">
+
+                <div class="flex flex-col md:flex-row md:items-center justify-between gap-3 mb-6">
+
+                    <div>
+
+                        <h3 class="text-xl font-bold text-slate-800">
+                            Historial del paciente
+                        </h3>
+
+                        <p class="text-sm text-slate-500">
+                            Registro cronológico estructurado de todos los intercambios.
+                        </p>
+
+                    </div>
+
+                    <button
+                        onclick="exportarHistorialPaciente()"
+                        class="border border-slate-300 hover:bg-slate-50 px-4 py-2 rounded-lg text-sm font-medium">
+                        ↓ Exportar CSV
+                    </button>
+
+                </div>
+
+
+                <!-- CONTENEDOR DE TARJETAS DE HISTORIAL BIEN DEMARCADAS -->
+                <div id="historialPaciente" class="space-y-6"></div>
+
+            </div>
+
+        </section>
+
+
+        <!-- ========================= -->
+        <!-- INVENTARIO -->
+        <!-- ========================= -->
+
+        <section id="view-cilindros" class="p-4 sm:p-6 lg:p-8 hidden-view">
+
+            <header class="encabezado-vista">
+                <div>
+                    <p class="encabezado-vista-seccion">Logística</p>
+                    <h2 class="encabezado-vista-titulo">Inventario de cilindros</h2>
+                    <p class="encabezado-vista-texto">Bodegas de llenos y vacíos, vencimientos y registro de equipos.</p>
+                </div>
+                <button
+                    onclick="abrirNuevoCilindro()"
+                    class="boton boton-primario">
+                    <svg class="icono" aria-hidden="true"><use href="img/iconos.svg#plus"></use></svg> Nuevo cilindro
+                </button>
+            </header>
+
+
+            <!-- BOTONES SELECTORES DE BODEGA -->
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
+
+                <button onclick="seleccionarBodega('llenos')" id="btn-bodega-llenos"
+                    class="bodega-tab card p-5 text-left flex items-center gap-4 border-2 border-slate-300 hover:border-blue-500 shadow-sm">
+                    <div class="w-12 h-12 rounded-xl bg-green-100 text-green-700 flex items-center justify-center text-2xl font-bold shadow-inner">
+                        <svg class="icono icono-relleno icono-verde" aria-hidden="true"><use href="img/iconos.svg#circle"></use></svg>
+                    </div>
+                    <div>
+                        <h4 class="font-extrabold text-slate-900 text-lg">Bodega de Cilindros Llenos</h4>
+                        <p class="text-xs font-bold text-slate-500 mt-0.5">Consultar cilindros disponibles</p>
+                    </div>
+                </button>
+
+                <button onclick="seleccionarBodega('vacios')" id="btn-bodega-vacios"
+                    class="bodega-tab card p-5 text-left flex items-center gap-4 border-2 border-slate-300 hover:border-blue-500 shadow-sm">
+                    <div class="w-12 h-12 rounded-xl bg-slate-200 text-slate-700 flex items-center justify-center text-2xl font-bold shadow-inner">
+                        <svg class="icono icono-gris" aria-hidden="true"><use href="img/iconos.svg#circle"></use></svg>
+                    </div>
+                    <div>
+                        <h4 class="font-extrabold text-slate-900 text-lg">Bodega de Cilindros Vacíos</h4>
+                        <p class="text-xs font-bold text-slate-500 mt-0.5">Consultar cilindros recibidos</p>
+                    </div>
+                </button>
+
+            </div>
+
+
+            <!-- MENSAJE INICIAL CUANDO NO SE HA SELECCIONADO NINGUNA BODEGA -->
+            <div id="inventarioPlaceholder" class="card p-8 sm:p-12 text-center border-2 border-slate-300 shadow-md">
+                <div class="text-4xl mb-3"><svg class="icono" aria-hidden="true"><use href="img/iconos.svg#archive"></use></svg></div>
+                <h4 class="font-black text-slate-800 text-lg">Ninguna bodega seleccionada</h4>
+                <p class="text-sm font-bold text-slate-400 mt-1">Haga clic en una de las opciones superiores para visualizar su contenido.</p>
+            </div>
+
+
+            <!-- MÓDULO 1: BODEGA DE CILINDROS LLENOS (OCULTO POR DEFECTO) -->
+            <div id="moduloLlenos" class="card overflow-hidden hidden border-2 border-slate-300 shadow-md">
+
+                <div class="p-6 border-b-2 border-slate-200 flex flex-col md:flex-row md:items-center justify-between gap-4 bg-slate-100">
+                    <div>
+                        <h4 class="font-black text-slate-900 text-xl flex items-center gap-2">
+                            <span><svg class="icono icono-relleno icono-verde" aria-hidden="true"><use href="img/iconos.svg#circle"></use></svg></span> Detalle: Bodega de Cilindros Llenos
+                        </h4>
+                        <p class="text-xs font-bold text-slate-600 mt-0.5">Cilindros listos para ser entregados a pacientes</p>
+                    </div>
+
+                    <input
+                        id="buscarLlenos"
+                        type="text"
+                        placeholder="Buscar cilindro lleno..."
+                        class="w-full md:w-72 border-2 border-slate-300 rounded-xl px-4 py-2.5 text-sm font-bold text-slate-800 bg-white shadow-inner"
+                        oninput="renderCilindros()"
+                    >
+                </div>
+
+                <div class="p-6">
+                    <div class="overflow-x-auto">
+                        <table class="w-full">
+                            <thead class="bg-slate-100 border-b-2 border-slate-200">
+                                <tr>
+                                    <th class="text-left px-4 py-3 text-xs font-black text-slate-700 uppercase">Cilindro</th>
+                                    <th class="text-left px-4 py-3 text-xs font-black text-slate-700 uppercase">Tipo</th>
+                                    <th class="text-left px-4 py-3 text-xs font-black text-slate-700 uppercase">1. Recepción proveedor</th>
+                                    <th class="text-left px-4 py-3 text-xs font-black text-slate-700 uppercase">2. Vencimiento etiqueta</th>
+                                    <th class="text-left px-4 py-3 text-xs font-black text-slate-700 uppercase">3. Cambio (+4 meses)</th>
+                                    <th class="text-left px-4 py-3 text-xs font-black text-slate-700 uppercase">Alerta</th>
+                                    <th class="text-left px-4 py-3 text-xs font-black text-slate-700 uppercase">Estado</th>
+                                    <th class="text-right px-4 py-3 text-xs font-black text-slate-700 uppercase">Acciones</th>
+                                </tr>
+                            </thead>
+                            <tbody id="tablaCilindrosLlenos"></tbody>
+                        </table>
+                    </div>
+                </div>
+
+            </div>
+
+
+            <!-- MÓDULO 2: BODEGA DE CILINDROS VACÍOS (OCULTO POR DEFECTO) -->
+            <div id="moduloVacios" class="card overflow-hidden hidden border-2 border-slate-300 shadow-md">
+
+                <div class="p-6 border-b-2 border-slate-200 flex flex-col md:flex-row md:items-center justify-between gap-4 bg-slate-100">
+                    <div>
+                        <h4 class="font-black text-slate-900 text-xl flex items-center gap-2">
+                            <span><svg class="icono icono-gris" aria-hidden="true"><use href="img/iconos.svg#circle"></use></svg></span> Detalle: Bodega de Cilindros Vacíos
+                        </h4>
+                        <p class="text-xs font-bold text-slate-600 mt-0.5">Cilindros devueltos pendientes de reabastecimiento</p>
+                    </div>
+
+                    <input
+                        id="buscarVacios"
+                        type="text"
+                        placeholder="Buscar cilindro vacío..."
+                        class="w-full md:w-72 border-2 border-slate-300 rounded-xl px-4 py-2.5 text-sm font-bold text-slate-800 bg-white shadow-inner"
+                        oninput="renderCilindros()"
+                    >
+                </div>
+
+                <div class="p-6">
+                    <div id="resumenBodegaVacios" class="grid grid-cols-1 md:grid-cols-4 gap-3 mb-5"></div>
+
+                    <div class="flex flex-wrap items-center justify-between gap-3 mb-4 p-4 bg-slate-50 border-2 border-slate-200 rounded-xl">
+                        <div>
+                            <p class="font-black text-slate-900">Devolución de cilindros al proveedor</p>
+                            <p class="text-xs font-bold text-slate-500 mt-1">Seleccione los cilindros vacíos que el proveedor retirará del establecimiento.</p>
+                        </div>
+                        <div class="flex flex-wrap gap-2">
+                            <button type="button" onclick="seleccionarTodosVacios(true)" class="px-4 py-2 border-2 border-slate-300 bg-white rounded-xl text-sm font-extrabold text-slate-700">Seleccionar todos</button>
+                            <button type="button" onclick="seleccionarTodosVacios(false)" class="px-4 py-2 border-2 border-slate-300 bg-white rounded-xl text-sm font-extrabold text-slate-700">Limpiar selección</button>
+                            <button type="button" onclick="abrirDevolucionProveedor()" class="px-5 py-2.5 bg-blue-700 hover:bg-blue-800 text-white rounded-xl text-sm font-extrabold shadow-sm">Entregar seleccionados al proveedor</button>
+                        </div>
+                    </div>
+
+                    <div class="overflow-x-auto">
+                        <table class="w-full">
+                            <thead class="bg-slate-100 border-b-2 border-slate-200">
+                                <tr>
+                                    <th class="text-center px-3 py-3 text-xs font-black text-slate-700 uppercase">Entregar</th>
+                                    <th class="text-left px-4 py-3 text-xs font-black text-slate-700 uppercase">Cilindro</th>
+                                    <th class="text-left px-4 py-3 text-xs font-black text-slate-700 uppercase">Tipo</th>
+                                    <th class="text-left px-4 py-3 text-xs font-black text-slate-700 uppercase">Vencimiento de etiqueta</th>
+                                    <th class="text-left px-4 py-3 text-xs font-black text-slate-700 uppercase">Estado</th>
+                                    <th class="text-right px-4 py-3 text-xs font-black text-slate-700 uppercase">Acciones</th>
+                                </tr>
+                            </thead>
+                            <tbody id="tablaCilindrosVacios"></tbody>
+                        </table>
+                    </div>
+
+                    <div class="mt-8 border-t-2 border-slate-200 pt-6">
+                        <div class="flex items-center justify-between gap-3 mb-4"><div><h5 class="text-xl font-black text-slate-900">Historial de devoluciones al proveedor</h5><p class="text-xs font-bold text-slate-500 mt-1">Registro permanente de los cilindros que salieron del Área de Salud.</p></div></div>
+                        <div id="historialDevolucionesProveedor" class="space-y-4"></div>
+                    </div>
+                </div>
+
+            </div>
+
+        </section>
+
+        <!-- ========================= -->
+        <!-- CILINDROS INSTITUCIONALES -->
+        <!-- ========================= -->
+        <section id="view-institucionales" class="p-4 sm:p-6 lg:p-8 hidden-view">
+            <header class="encabezado-vista">
+                <div>
+                    <p class="encabezado-vista-seccion">Servicios</p>
+                    <h2 class="encabezado-vista-titulo">Cilindros institucionales</h2>
+                    <p class="encabezado-vista-texto">Ubicación, responsable, condición e inspecciones de los cilindros instalados en los servicios.</p>
+                </div>
+            </header>
+
+            <div class="pestanas mb-6">
+                <button onclick="mostrarInstitucional('resumen')" data-tabinstitucional="resumen" class="tabinstitucional">Resumen</button>
+                <button onclick="mostrarInstitucional('ebais')" data-tabinstitucional="ebais" class="tabinstitucional"><svg class="icono" aria-hidden="true"><use href="img/iconos.svg#hospital"></use></svg> EBAIS</button>
+                <button onclick="mostrarInstitucional('ambulancias')" data-tabinstitucional="ambulancias" class="tabinstitucional"><svg class="icono" aria-hidden="true"><use href="img/iconos.svg#ambulance"></use></svg> Ambulancias</button>
+                <button onclick="mostrarInstitucional('emergencias')" data-tabinstitucional="emergencias" class="tabinstitucional"><svg class="icono" aria-hidden="true"><use href="img/iconos.svg#siren"></use></svg> Emergencias</button>
+                <button onclick="mostrarInstitucional('manifold')" data-tabinstitucional="manifold" class="tabinstitucional"><svg class="icono" aria-hidden="true"><use href="img/iconos.svg#gauge"></use></svg> Manifold</button>
+            </div>
+
+            <div id="contenidoInstitucional"></div>
+        </section>
+
+    </main>
+
+</div>
+
+
+<!-- ========================= -->
+<!-- MODAL NUEVO PACIENTE -->
+<!-- ========================= -->
+
+<div id="modalPaciente"
+     class="fixed inset-0 modal-bg hidden items-center justify-center z-50 p-4 overflow-y-auto">
+
+    <div class="bg-white rounded-2xl w-full max-w-4xl shadow-2xl my-6">
+
+        <div class="p-6 border-b border-slate-200">
+
+            <div class="flex justify-between items-center">
+
+                <div>
+                    <h3 id="tituloModalPaciente" class="text-xl font-bold text-slate-800">
+                        Nuevo paciente
+                    </h3>
+
+                    <p id="subtituloModalPaciente" class="text-sm text-slate-500">
+                        Registrar paciente en el sistema.
+                    </p>
+                </div>
+
+                <button
+                    onclick="cerrarModalPaciente()"
+                    class="text-slate-400 hover:text-slate-700 text-xl">
+                    <svg class="icono" aria-hidden="true"><use href="img/iconos.svg#x"></use></svg>
+                </button>
+
+            </div>
+
+        </div>
+
+
+        <div class="p-6 space-y-4">
+
+            <div>
+
+                <label class="block text-sm font-medium text-slate-700 mb-2">
+                    Nombre completo *
+                </label>
+
+                <input
+                    id="nuevoPacienteNombre"
+                    class="w-full border border-slate-300 rounded-lg px-4 py-3"
+                    placeholder="Nombre completo">
+
+            </div>
+
+
+            <div>
+
+                <label class="block text-sm font-medium text-slate-700 mb-2">
+                    Identificación *
+                </label>
+
+                <input
+                    id="nuevoPacienteCedula"
+                    class="w-full border border-slate-300 rounded-lg px-4 py-3"
+                    placeholder="1-1111-1111">
+
+            </div>
+
+
+            <div>
+
+                <label class="block text-sm font-medium text-slate-700 mb-2">
+                    Número de referencia médica
+                </label>
+
+                <input
+                    id="nuevoPacienteReferencia"
+                    class="w-full border border-slate-300 rounded-lg px-4 py-3"
+                    placeholder="REF-2026-001">
+
+            </div>
+
+            <div class="border-t border-slate-200 pt-5">
+                <div class="flex flex-wrap items-center justify-between gap-3 mb-3">
+                    <div><h4 class="font-black text-slate-900">Cilindros iniciales en préstamo</h4><p class="text-xs text-slate-500 mt-1">Puede asignar uno o varios cilindros llenos disponibles.</p></div>
+                    <button type="button" onclick="agregarCilindroPacienteFormulario()" class="px-4 py-2 bg-blue-50 border-2 border-blue-300 text-blue-700 rounded-xl font-extrabold text-sm">+ Agregar cilindro</button>
+                </div>
+                <div id="filasCilindrosPaciente" class="space-y-3"></div>
+                <p id="sinCilindrosPacienteFormulario" class="text-sm text-slate-400 font-bold py-3">No se han asignado cilindros.</p>
+            </div>
+
+            <div class="border-t border-slate-200 pt-5">
+                <div class="flex flex-wrap items-center justify-between gap-3 mb-3">
+                    <div><h4 class="font-black text-slate-900">Reguladores en préstamo</h4><p class="text-xs text-slate-500 mt-1">Registre todos los reguladores entregados al paciente.</p></div>
+                    <button type="button" onclick="agregarReguladorPacienteFormulario()" class="px-4 py-2 bg-amber-50 border-2 border-amber-300 text-amber-700 rounded-xl font-extrabold text-sm">+ Agregar regulador</button>
+                </div>
+                <div id="filasReguladoresPaciente" class="space-y-3"></div>
+                <p id="sinReguladoresPacienteFormulario" class="text-sm text-slate-400 font-bold py-3">No se han asignado reguladores.</p>
+            </div>
+
+        </div>
+
+
+        <div class="p-6 border-t border-slate-200 flex justify-end gap-3">
+
+            <button
+                onclick="cerrarModalPaciente()"
+                class="px-5 py-3 border border-slate-300 rounded-lg">
+                Cancelar
+            </button>
+
+            <button
+                id="botonGuardarPaciente"
+                onclick="guardarPaciente()"
+                class="px-5 py-3 bg-blue-600 text-white rounded-lg font-semibold">
+                Guardar
+            </button>
+
+        </div>
+
+    </div>
+
+</div>
+
+
+<!-- ========================= -->
+<!-- MODAL NUEVO CILINDRO -->
+<!-- ========================= -->
+
+<div id="modalCilindro"
+     class="fixed inset-0 modal-bg hidden items-center justify-center z-50 p-4">
+
+    <div class="bg-white rounded-2xl w-full max-w-lg shadow-2xl">
+
+        <div class="p-6 border-b border-slate-200">
+
+            <div class="flex justify-between items-center">
+
+                <h3 id="tituloModalCilindro" class="text-xl font-bold text-slate-800">
+                    Nuevo cilindro
+                </h3>
+
+                <button
+                    onclick="cerrarModalCilindro()"
+                    class="text-slate-400 hover:text-slate-700 text-xl">
+                    <svg class="icono" aria-hidden="true"><use href="img/iconos.svg#x"></use></svg>
+                </button>
+
+            </div>
+
+        </div>
+
+
+        <div class="p-6 space-y-4">
+
+            <div>
+
+                <label class="block text-sm font-medium text-slate-700 mb-2">
+                    Número / serie *
+                </label>
+
+                <input
+                    id="nuevoCilindroNumero"
+                    class="w-full border border-slate-300 rounded-lg px-4 py-3"
+                    placeholder="Ej. 78125">
+
+            </div>
+
+
+            <div>
+
+                <label class="block text-sm font-medium text-slate-700 mb-2">
+                    Tipo *
+                </label>
+
+                <select
+                    id="nuevoCilindroTipo"
+                    class="w-full border border-slate-300 rounded-lg px-4 py-3">
+
+                    <option value="">
+                        Seleccione
+                    </option>
+
+                    <option value="220 PC - Rosca">
+                        220 PC - Rosca
+                    </option>
+
+                    <option value="30 PC - Pin Index">
+                        30 PC - Pin Index
+                    </option>
+
+                    <option value="30 PC - Rosca">
+                        30 PC - Rosca
+                    </option>
+
+                </select>
+
+            </div>
+
+
+            <div>
+
+                <label class="block text-sm font-medium text-slate-700 mb-2">
+                    Fecha de recepción del proveedor *
+                </label>
+
+                <input
+                    id="nuevoCilindroFechaRecepcion"
+                    type="date"
+                    class="w-full border border-slate-300 rounded-lg px-4 py-3">
+                <p class="text-xs font-bold text-slate-500 mt-2">Esta es la fecha en que el proveedor entrega el cilindro. A partir de esta fecha el sistema calculará automáticamente 4 meses para indicar cuándo debe cambiarse.</p>
+
+            </div>
+
+
+            <div>
+
+                <label class="block text-sm font-medium text-slate-700 mb-2">
+                    Fecha de vencimiento de etiqueta *
+                </label>
+
+                <input
+                    id="nuevoCilindroVencimiento"
+                    type="date"
+                    class="w-full border border-slate-300 rounded-lg px-4 py-3">
+                <p class="text-xs font-bold text-slate-500 mt-2">Esta fecha corresponde al vencimiento físico indicado en la etiqueta del cilindro y se controla de forma independiente a la fecha de recepción.</p>
+
+            </div>
+
+        </div>
+
+
+        <div class="p-6 border-t border-slate-200 flex justify-end gap-3">
+
+            <button
+                onclick="cerrarModalCilindro()"
+                class="px-5 py-3 border border-slate-300 rounded-lg">
+                Cancelar
+            </button>
+
+            <button
+                id="botonGuardarCilindro"
+                onclick="guardarCilindro()"
+                class="px-5 py-3 bg-blue-600 text-white rounded-lg font-semibold">
+                Guardar
+            </button>
+
+        </div>
+
+    </div>
+
+</div>
+
+<!-- MODAL CREAR / EDITAR UBICACIÓN INSTITUCIONAL -->
+<div id="modalUbicacionInstitucional" class="fixed inset-0 modal-bg hidden items-center justify-center z-50 p-4 overflow-y-auto">
+    <div class="bg-white rounded-2xl w-full max-w-3xl shadow-2xl my-6">
+        <div class="p-6 border-b-2 border-slate-200 flex items-start justify-between gap-4">
+            <div><p class="text-xs font-black uppercase tracking-wider text-cyan-700">Cilindros institucionales</p><h3 id="tituloModalUbicacionInstitucional" class="text-xl font-black text-slate-900 mt-1">Nueva ubicación</h3><p class="text-sm text-slate-500 mt-1">Registre o actualice la información general de la ubicación.</p></div>
+            <button type="button" onclick="cerrarModalUbicacionInstitucional()" class="text-slate-400 hover:text-slate-700 text-xl"><svg class="icono" aria-hidden="true"><use href="img/iconos.svg#x"></use></svg></button>
+        </div>
+        <div class="p-6 space-y-5">
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <input id="ubicacionInstitucionalTipo" type="hidden" value="ebais">
+                <div><label class="block text-sm font-bold text-slate-700 mb-2">Nombre de la ubicación *</label><input id="ubicacionInstitucionalNombre" class="w-full border-2 border-slate-300 rounded-xl px-4 py-3" placeholder="Ej. EBAIS San Miguel"></div>
+                <div><label class="block text-sm font-bold text-slate-700 mb-2">Descripción o subtítulo</label><input id="ubicacionInstitucionalSubtitulo" class="w-full border-2 border-slate-300 rounded-xl px-4 py-3" placeholder="Ej. Área de Salud Naranjo"></div>
+                <div><label class="block text-sm font-bold text-slate-700 mb-2">Responsable</label><input id="ubicacionInstitucionalResponsable" class="w-full border-2 border-slate-300 rounded-xl px-4 py-3" placeholder="Nombre o servicio responsable"></div>
+                <div><label class="block text-sm font-bold text-slate-700 mb-2">Teléfono</label><input id="ubicacionInstitucionalTelefono" class="w-full border-2 border-slate-300 rounded-xl px-4 py-3" placeholder="Teléfono o extensión"></div>
+                <div><label class="block text-sm font-bold text-slate-700 mb-2">Cantidad mínima de cilindros</label><input id="ubicacionInstitucionalMinimo" type="number" min="0" class="w-full border-2 border-slate-300 rounded-xl px-4 py-3" value="1"></div>
+            </div>
+        </div>
+        <div class="p-6 border-t-2 border-slate-200 flex justify-end gap-3"><button type="button" onclick="cerrarModalUbicacionInstitucional()" class="px-5 py-3 border-2 border-slate-300 rounded-xl font-bold">Cancelar</button><button id="botonGuardarUbicacionInstitucional" type="button" onclick="guardarUbicacionInstitucional()" class="px-5 py-3 bg-cyan-700 hover:bg-cyan-800 text-white rounded-xl font-extrabold">Guardar ubicación</button></div>
+    </div>
+</div>
+
+<!-- MODAL DEVOLUCIÓN DE CILINDROS VACÍOS AL PROVEEDOR -->
+<div id="modalDevolucionProveedor" class="fixed inset-0 modal-bg hidden items-center justify-center z-50 p-4 overflow-y-auto">
+    <div class="bg-white rounded-2xl w-full max-w-3xl shadow-2xl my-6">
+        <div class="p-6 border-b-2 border-slate-200 flex items-start justify-between gap-4">
+            <div><p class="text-xs font-black uppercase tracking-wider text-blue-700">Salida de inventario</p><h3 class="text-xl font-black text-slate-900 mt-1">Entregar cilindros vacíos al proveedor</h3><p class="text-sm text-slate-500 mt-1">Al confirmar, los cilindros dejarán de aparecer en la Bodega de Vacíos y quedarán únicamente en el historial.</p></div>
+            <button type="button" onclick="cerrarDevolucionProveedor()" class="text-slate-400 hover:text-slate-700 text-xl"><svg class="icono" aria-hidden="true"><use href="img/iconos.svg#x"></use></svg></button>
+        </div>
+        <div class="p-6 space-y-5">
+            <div id="resumenDevolucionProveedor" class="bg-blue-50 border-2 border-blue-200 rounded-xl p-4"></div>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div><label class="block text-sm font-bold text-slate-700 mb-2">Empresa proveedora *</label><input id="devolucionEmpresaProveedor" class="w-full border-2 border-slate-300 rounded-xl px-4 py-3" placeholder="Nombre de la empresa"></div>
+                <div><label class="block text-sm font-bold text-slate-700 mb-2">Persona del proveedor que recibe *</label><input id="devolucionPersonaProveedor" class="w-full border-2 border-slate-300 rounded-xl px-4 py-3" placeholder="Nombre completo"></div>
+                <div><label class="block text-sm font-bold text-slate-700 mb-2">Funcionario CCSS que entrega *</label><input id="devolucionFuncionarioCCSS" class="w-full border-2 border-slate-300 rounded-xl px-4 py-3" placeholder="Nombre completo"></div>
+                <div><label class="block text-sm font-bold text-slate-700 mb-2">Pedido, factura o comprobante</label><input id="devolucionComprobante" class="w-full border-2 border-slate-300 rounded-xl px-4 py-3" placeholder="Número o referencia"></div>
+            </div>
+            <div><label class="block text-sm font-bold text-slate-700 mb-2">Observaciones</label><textarea id="devolucionObservaciones" rows="3" class="w-full border-2 border-slate-300 rounded-xl px-4 py-3" placeholder="Información adicional de la entrega..."></textarea></div>
+            <div class="bg-amber-50 border-2 border-amber-300 rounded-xl p-4 text-sm font-bold text-amber-950">Esta operación elimina los cilindros seleccionados del inventario operativo. El historial de la devolución permanecerá disponible.</div>
+        </div>
+        <div class="p-6 border-t-2 border-slate-200 flex justify-end gap-3"><button type="button" onclick="cerrarDevolucionProveedor()" class="px-5 py-3 border-2 border-slate-300 rounded-xl font-bold">Cancelar</button><button type="button" onclick="confirmarDevolucionProveedor()" class="px-5 py-3 bg-blue-700 hover:bg-blue-800 text-white rounded-xl font-extrabold">Confirmar entrega al proveedor</button></div>
+    </div>
+</div>
+
+<!-- MODAL DE INSTALACIÓN / CAMBIO EN EBAIS -->
+<div id="modalCambioEbais" class="fixed inset-0 modal-bg hidden items-center justify-center z-50 p-4 overflow-y-auto">
+    <div class="bg-white rounded-2xl w-full max-w-3xl shadow-2xl my-6">
+        <div class="p-6 border-b border-slate-200 flex items-start justify-between gap-4">
+            <div><p class="text-xs font-black uppercase tracking-wider text-blue-600">Movimiento institucional</p><h3 id="tituloCambioEbais" class="text-xl font-black text-slate-900 mt-1">Registrar cambio</h3><p id="subtituloCambioEbais" class="text-sm text-slate-500 mt-1"></p></div>
+            <button onclick="cerrarCambioEbais()" class="text-slate-400 hover:text-slate-700 text-xl" aria-label="Cerrar"><svg class="icono" aria-hidden="true"><use href="img/iconos.svg#x"></use></svg></button>
+        </div>
+        <div class="p-6 space-y-5">
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div><label class="block text-sm font-bold text-slate-700 mb-2">Tipo de movimiento *</label><select id="cambioEbaisTipoMovimiento" class="w-full border-2 border-slate-300 rounded-xl px-4 py-3 bg-white"><option value="Instalación inicial">Instalación inicial</option><option value="Cambio de cilindro">Cambio de cilindro</option></select></div>
+                <div><label class="block text-sm font-bold text-slate-700 mb-2">Fecha del cambio o instalación *</label><input id="cambioEbaisFecha" type="date" class="w-full border-2 border-slate-300 rounded-xl px-4 py-3"></div>
+            </div>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div><label class="block text-sm font-bold text-slate-700 mb-2">Cilindro que se retira</label><div id="cambioEbaisCilindroAnterior" class="min-h-[50px] flex items-center border-2 border-slate-200 rounded-xl px-4 py-3 bg-slate-50 font-bold text-slate-700">Ninguno</div></div>
+                <div><label class="block text-sm font-bold text-slate-700 mb-2">Cilindro lleno que se instala *</label><select id="cambioEbaisCilindroNuevo" onchange="mostrarInfoCilindroEbais()" class="w-full border-2 border-slate-300 rounded-xl px-4 py-3 bg-white"><option value="">Seleccione...</option></select></div>
+            </div>
+            <div id="infoCilindroNuevoEbais" class="hidden border-2 border-blue-200 bg-blue-50 rounded-xl p-4 text-sm text-blue-950"></div>
+            <div id="cilindrosAdicionalesEbais" class="space-y-4"></div>
+            <button type="button" onclick="agregarCilindroAdicionalEbais()" class="w-full border-2 border-dashed border-blue-300 bg-blue-50 hover:bg-blue-100 text-blue-700 rounded-xl px-4 py-3 font-extrabold transition-colors">+ Agregar o cambiar otro cilindro</button>
+            <div class="border-t border-slate-200 pt-5">
+                <h4 class="font-black text-slate-900 mb-4">Regulador instalado</h4>
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                    <div><label class="block text-sm font-bold text-slate-700 mb-2">¿Tiene regulador?</label><select id="cambioEbaisRegulador" onchange="actualizarReguladorEbais()" class="w-full border-2 border-slate-300 rounded-xl px-4 py-3 bg-white"><option value="no">No</option><option value="si">Sí</option></select></div>
+                    <div id="campoTipoReguladorEbais" class="hidden"><label class="block text-sm font-bold text-slate-700 mb-2">Tipo de regulador *</label><select id="cambioEbaisReguladorTipo" class="w-full border-2 border-slate-300 rounded-xl px-4 py-3 bg-white"><option value="">Seleccione...</option><option value="Rosca">Rosca</option><option value="Pin">Pin</option></select></div>
+                    <div id="campoSerieReguladorEbais" class="hidden"><label class="block text-sm font-bold text-slate-700 mb-2">Número de serie</label><input id="cambioEbaisReguladorSerie" class="w-full border-2 border-slate-300 rounded-xl px-4 py-3" placeholder="Ej. REG-00125"></div>
+                </div>
+            </div>
+            <div class="border-t border-slate-200 pt-5">
+                <h4 class="font-black text-slate-900 mb-4">Funcionarios responsables</h4>
+                <div class="mb-4"><label class="block text-sm font-bold text-slate-700 mb-2">Responsable que queda a cargo del cilindro *</label><input id="cambioEbaisResponsableCilindro" class="w-full border-2 border-blue-300 rounded-xl px-4 py-3 bg-blue-50" placeholder="Nombre completo de la persona responsable"><p class="text-xs text-slate-500 mt-2">Esta persona queda registrada como responsable del cilindro instalado en el EBAIS.</p></div>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div><label class="block text-sm font-bold text-slate-700 mb-2">Gestión administrativa <span class="text-slate-400 font-normal">(opcional)</span></label><input id="cambioEbaisFuncionarioAdministrativo" class="w-full border-2 border-slate-300 rounded-xl px-4 py-3" placeholder="Nombre del funcionario"></div>
+                    <div><label class="block text-sm font-bold text-slate-700 mb-2">Cambio o instalación *</label><input id="cambioEbaisFuncionarioInstalacion" class="w-full border-2 border-slate-300 rounded-xl px-4 py-3" placeholder="Nombre del funcionario"></div>
+                </div>
+            </div>
+            <div><label class="block text-sm font-bold text-slate-700 mb-2">Observaciones</label><textarea id="cambioEbaisObservaciones" rows="3" class="w-full border-2 border-slate-300 rounded-xl px-4 py-3" placeholder="Detalle del trabajo realizado..."></textarea></div>
+        </div>
+        <div class="p-6 border-t border-slate-200 flex justify-end gap-3"><button onclick="cerrarCambioEbais()" class="px-5 py-3 border-2 border-slate-300 rounded-xl font-bold">Cancelar</button><button onclick="guardarCambioEbais()" class="px-5 py-3 bg-blue-600 hover:bg-blue-700 text-white rounded-xl font-extrabold">Confirmar movimiento</button></div>
+    </div>
+</div>
+
+<!-- MODAL PARA EDITAR EL REGULADOR DEL EBAIS -->
+<div id="modalReguladorEbais" class="fixed inset-0 modal-bg hidden items-center justify-center z-50 p-4">
+    <div class="bg-white rounded-2xl w-full max-w-lg shadow-2xl">
+        <div class="p-6 border-b border-slate-200 flex items-start justify-between"><div><p class="text-xs font-black uppercase tracking-wider text-amber-600">Equipo asociado</p><h3 class="text-xl font-black text-slate-900 mt-1">Información del regulador</h3><p id="subtituloReguladorEbais" class="text-sm text-slate-500 mt-1"></p></div><button onclick="cerrarReguladorEbais()" class="text-slate-400 hover:text-slate-700 text-xl" aria-label="Cerrar"><svg class="icono" aria-hidden="true"><use href="img/iconos.svg#x"></use></svg></button></div>
+        <div class="p-6 space-y-4">
+            <div><label class="block text-sm font-bold text-slate-700 mb-2">¿La ubicación tiene regulador instalado?</label><select id="editarEbaisRegulador" onchange="actualizarCamposEditarReguladorEbais()" class="w-full border-2 border-slate-300 rounded-xl px-4 py-3 bg-white"><option value="no">No</option><option value="si">Sí</option></select></div>
+            <div id="editarEbaisReguladorDetalles" class="hidden grid grid-cols-1 md:grid-cols-2 gap-4"><div><label class="block text-sm font-bold text-slate-700 mb-2">Tipo de regulador *</label><select id="editarEbaisReguladorTipo" class="w-full border-2 border-slate-300 rounded-xl px-4 py-3 bg-white"><option value="">Seleccione...</option><option value="Rosca">Rosca</option><option value="Pin">Pin</option></select></div><div><label class="block text-sm font-bold text-slate-700 mb-2">Número de serie</label><input id="editarEbaisReguladorSerie" class="w-full border-2 border-slate-300 rounded-xl px-4 py-3" placeholder="Ej. REG-00125"></div></div>
+            <div><label class="block text-sm font-bold text-slate-700 mb-2">Funcionario que actualiza la información *</label><input id="editarEbaisReguladorFuncionario" class="w-full border-2 border-slate-300 rounded-xl px-4 py-3" placeholder="Nombre completo"></div>
+        </div>
+        <div class="p-6 border-t border-slate-200 flex justify-end gap-3"><button onclick="cerrarReguladorEbais()" class="px-5 py-3 border-2 border-slate-300 rounded-xl font-bold">Cancelar</button><button onclick="guardarReguladorEbais()" class="px-5 py-3 bg-amber-600 hover:bg-amber-700 text-white rounded-xl font-extrabold">Guardar regulador</button></div>
+    </div>
+</div>
+
+
+<!-- POPUP PERSONALIZADO DEL SISTEMA -->
+<div id="modalMovimientoAmbulancia" class="fixed inset-0 modal-bg hidden items-center justify-center z-50 p-4 overflow-y-auto"><div class="bg-white rounded-2xl w-full max-w-4xl shadow-2xl my-6"><div class="p-6 border-b border-slate-200 flex justify-between"><div><p class="text-xs font-black uppercase text-emerald-600">Movimiento de ambulancia</p><h3 class="text-xl font-black text-slate-900">Instalación o cambio de cilindros</h3><p id="subtituloMovimientoAmbulancia" class="text-sm text-slate-500"></p></div><button onclick="cerrarMovimientoAmbulancia()" class="text-xl text-slate-400"><svg class="icono" aria-hidden="true"><use href="img/iconos.svg#x"></use></svg></button></div><div class="p-6 space-y-5"><div class="grid grid-cols-1 md:grid-cols-3 gap-4"><div><label class="block text-sm font-bold mb-2">Fecha *</label><input id="fechaMovimientoAmbulancia" type="date" class="w-full border-2 border-slate-300 rounded-xl px-4 py-3"></div><div><label class="block text-sm font-bold mb-2">Funcionario de mantenimiento *</label><input id="funcionarioMovimientoAmbulancia" class="w-full border-2 border-slate-300 rounded-xl px-4 py-3"></div><div><label class="block text-sm font-bold mb-2">Chofer responsable *</label><input id="choferMovimientoAmbulancia" class="w-full border-2 border-blue-300 bg-blue-50 rounded-xl px-4 py-3"></div></div><div id="filasMovimientoAmbulancia" class="space-y-4"></div><button onclick="agregarFilaMovimientoAmbulancia()" type="button" class="w-full border-2 border-dashed border-emerald-300 bg-emerald-50 hover:bg-emerald-100 text-emerald-700 rounded-xl py-3 font-extrabold">+ Agregar otro cilindro</button><div><label class="block text-sm font-bold mb-2">Observaciones</label><textarea id="observacionesMovimientoAmbulancia" rows="3" class="w-full border-2 border-slate-300 rounded-xl px-4 py-3"></textarea></div></div><div class="p-6 border-t flex justify-end gap-3"><button onclick="cerrarMovimientoAmbulancia()" class="px-5 py-3 border-2 rounded-xl font-bold">Cancelar</button><button onclick="guardarMovimientoAmbulancia()" class="px-5 py-3 bg-emerald-600 text-white rounded-xl font-extrabold">Confirmar movimiento</button></div></div></div>
+
+<!-- USUARIOS DEL SISTEMA -->
+<div id="modalGestionUsuarios" class="fixed inset-0 modal-bg hidden items-center justify-center z-50 p-4 overflow-y-auto">
+    <div class="bg-white rounded-2xl w-full max-w-4xl shadow-2xl my-6">
+        <div class="p-6 border-b border-slate-200 flex items-start justify-between gap-4">
+            <div>
+                <p class="encabezado-vista-seccion">Administración</p>
+                <h3 class="text-xl font-black text-slate-900 mt-1">Usuarios del sistema</h3>
+                <p class="text-sm text-slate-500 mt-1">Cree cuentas para el equipo, controle quién puede ingresar y gestione las contraseñas.</p>
+            </div>
+            <button type="button" onclick="cerrarGestionUsuarios()" class="text-slate-400 hover:text-slate-700 text-xl" aria-label="Cerrar"><svg class="icono" aria-hidden="true"><use href="img/iconos.svg#x"></use></svg></button>
+        </div>
+        <div class="pestanas px-6 pt-2" role="tablist">
+            <button type="button" class="pestana-admin activo" data-pestana-admin="usuarios" role="tab" onclick="mostrarPestanaAdmin('usuarios')"><svg class="icono" aria-hidden="true"><use href="img/iconos.svg#users"></use></svg> Usuarios</button>
+            <button type="button" class="pestana-admin" data-pestana-admin="clave" role="tab" onclick="mostrarPestanaAdmin('clave')"><svg class="icono" aria-hidden="true"><use href="img/iconos.svg#key-round"></use></svg> Mi contraseña</button>
+        </div>
+        <div id="panelAdminClave" class="p-6" hidden>
+            <form id="formularioClaveAdmin" class="space-y-4 max-w-md">
+                <div>
+                    <h4 class="font-black text-slate-900">Cambiar mi contraseña</h4>
+                    <p class="text-sm text-slate-500 mt-1">Mínimo 8 caracteres. Para la contraseña de otra persona, use "Cambiar contraseña" en la pestaña Usuarios.</p>
+                </div>
+                <label class="campo"><span class="campo-etiqueta">Contraseña actual</span><input name="actual" type="password" class="campo-entrada" autocomplete="current-password" required></label>
+                <label class="campo"><span class="campo-etiqueta">Nueva contraseña</span><input name="nueva" type="password" class="campo-entrada" autocomplete="new-password" minlength="8" required></label>
+                <label class="campo"><span class="campo-etiqueta">Confirmar nueva contraseña</span><input name="confirmar" type="password" class="campo-entrada" autocomplete="new-password" minlength="8" required></label>
+                <button type="submit" class="boton boton-primario">Guardar contraseña</button>
+            </form>
+        </div>
+        <div id="panelAdminUsuarios" class="p-6 grid grid-cols-1 lg:grid-cols-[300px_1fr] gap-6">
+            <form id="formularioNuevoUsuario" class="space-y-4">
+                <h4 class="font-black text-slate-900">Nuevo usuario</h4>
+                <label class="campo"><span class="campo-etiqueta">Nombre completo</span><input id="nuevoUsuarioNombre" class="campo-entrada" required></label>
+                <label class="campo"><span class="campo-etiqueta">Usuario</span><input id="nuevoUsuarioCuenta" class="campo-entrada" autocomplete="off" autocapitalize="none" spellcheck="false" required></label>
+                <label class="campo"><span class="campo-etiqueta">Contraseña temporal</span><input id="nuevoUsuarioClave" type="password" class="campo-entrada" autocomplete="new-password" minlength="8" required></label>
+                <label class="campo"><span class="campo-etiqueta">Perfil</span>
+                    <select id="nuevoUsuarioRol" class="campo-entrada"><option value="funcionario">Funcionario</option><option value="administrador">Administrador</option></select>
+                </label>
+                <button type="submit" class="boton boton-primario w-full"><svg class="icono" aria-hidden="true"><use href="img/iconos.svg#plus"></use></svg> Crear usuario</button>
+            </form>
+            <div>
+                <h4 class="font-black text-slate-900 mb-3">Usuarios registrados</h4>
+                <div id="listaUsuarios" class="lista-usuarios"></div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- CAMBIAR MI CONTRASEÑA -->
+<div id="modalCambioClave" class="fixed inset-0 modal-bg hidden items-center justify-center z-50 p-4 overflow-y-auto">
+    <form id="formularioCambioClave" class="bg-white rounded-2xl w-full max-w-md shadow-2xl">
+        <div class="p-6 border-b border-slate-200">
+            <h3 class="text-lg font-black text-slate-900">Cambiar mi contraseña</h3>
+            <p class="text-sm text-slate-500 mt-1">La nueva contraseña debe tener al menos 8 caracteres.</p>
+        </div>
+        <div class="p-6 space-y-4">
+            <label class="campo"><span class="campo-etiqueta">Contraseña actual</span><input id="claveActual" name="actual" type="password" class="campo-entrada" autocomplete="current-password" required></label>
+            <label class="campo"><span class="campo-etiqueta">Nueva contraseña</span><input id="claveNueva" name="nueva" type="password" class="campo-entrada" autocomplete="new-password" minlength="8" required></label>
+            <label class="campo"><span class="campo-etiqueta">Confirmar nueva contraseña</span><input id="claveNuevaConfirmar" name="confirmar" type="password" class="campo-entrada" autocomplete="new-password" minlength="8" required></label>
+        </div>
+        <div class="p-4 border-t border-slate-200 flex justify-end gap-2">
+            <button type="button" class="boton boton-secundario" onclick="cerrarModal('modalCambioClave')">Cancelar</button>
+            <button type="submit" class="boton boton-primario">Guardar</button>
+        </div>
+    </form>
+</div>
+
+<!-- RESTABLECER CONTRASEÑA DE OTRO USUARIO -->
+<div id="modalRestablecerClave" class="fixed inset-0 modal-bg hidden items-center justify-center z-50 p-4 overflow-y-auto">
+    <form id="formularioRestablecerClave" class="bg-white rounded-2xl w-full max-w-md shadow-2xl">
+        <input type="hidden" id="restablecerClaveUsuarioId">
+        <div class="p-6 border-b border-slate-200">
+            <h3 class="text-lg font-black text-slate-900">Restablecer contraseña</h3>
+            <p class="text-sm text-slate-500 mt-1">Nueva contraseña temporal para <strong id="restablecerClaveNombre" class="text-slate-900"></strong>.</p>
+        </div>
+        <div class="p-6">
+            <label class="campo"><span class="campo-etiqueta">Contraseña temporal</span><input id="restablecerClaveNueva" type="password" class="campo-entrada" autocomplete="new-password" minlength="8" required></label>
+        </div>
+        <div class="p-4 border-t border-slate-200 flex justify-end gap-2">
+            <button type="button" class="boton boton-secundario" onclick="cerrarModal('modalRestablecerClave')">Cancelar</button>
+            <button type="submit" class="boton boton-primario">Restablecer</button>
+        </div>
+    </form>
+</div>
+
+<div id="ccssPopupOverlay" class="ccss-popup-overlay" data-tipo="info" aria-hidden="true">
+    <div class="ccss-popup" role="dialog" aria-modal="true" aria-labelledby="ccssPopupTitulo" aria-describedby="ccssPopupMensaje">
+        <div class="ccss-popup-acento"></div>
+        <div class="ccss-popup-contenido">
+            <div id="ccssPopupIcono" class="ccss-popup-icono" aria-hidden="true">i</div>
+            <h3 id="ccssPopupTitulo" class="ccss-popup-titulo">Información</h3>
+            <p id="ccssPopupMensaje" class="ccss-popup-mensaje"></p>
+            <div class="ccss-popup-acciones">
+                <button id="ccssPopupAceptar" type="button" class="ccss-popup-boton">Aceptar</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- CONFIRMACIÓN PERSONALIZADA PARA ELIMINAR -->
+<div id="confirmacionEliminarOverlay" class="ccss-popup-overlay confirmacion-eliminar" aria-hidden="true">
+    <div class="ccss-popup" role="alertdialog" aria-modal="true" aria-labelledby="confirmacionEliminarTitulo" aria-describedby="confirmacionEliminarMensaje">
+        <div class="ccss-popup-acento"></div>
+        <div class="ccss-popup-contenido">
+            <div class="ccss-popup-icono" aria-hidden="true"><svg class="icono" aria-hidden="true"><use href="img/iconos.svg#triangle-alert"></use></svg></div>
+            <h3 id="confirmacionEliminarTitulo" class="ccss-popup-titulo">¿Eliminar paciente?</h3>
+            <p id="confirmacionEliminarMensaje" class="ccss-popup-mensaje">Está a punto de eliminar a:</p>
+            <strong id="confirmacionEliminarNombre" class="confirmacion-nombre"></strong>
+            <p id="confirmacionEliminarDetalle" class="text-sm text-slate-500"></p>
+            <div class="confirmacion-advertencia">Esta acción es permanente y no se puede deshacer.</div>
+            <div class="ccss-popup-acciones">
+                <button id="confirmacionEliminarCancelar" type="button" class="ccss-popup-boton boton-cancelar">Cancelar</button>
+                <button id="confirmacionEliminarAceptar" type="button" class="ccss-popup-boton boton-eliminar">Sí, eliminar</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- CONFIRMACIÓN PERSONALIZADA PARA ENTREGA AL PROVEEDOR -->
+<div id="confirmacionProveedorOverlay" class="ccss-popup-overlay confirmacion-proveedor" aria-hidden="true">
+    <div class="ccss-popup" role="alertdialog" aria-modal="true" aria-labelledby="confirmacionProveedorTitulo" aria-describedby="confirmacionProveedorMensaje">
+        <div class="ccss-popup-acento"></div>
+        <div class="ccss-popup-contenido">
+            <div class="ccss-popup-icono" aria-hidden="true"><svg class="icono" aria-hidden="true"><use href="img/iconos.svg#truck"></use></svg></div>
+            <h3 id="confirmacionProveedorTitulo" class="ccss-popup-titulo">Confirmar entrega al proveedor</h3>
+            <p id="confirmacionProveedorMensaje" class="ccss-popup-mensaje"></p>
+            <strong id="confirmacionProveedorCantidad" class="confirmacion-nombre text-blue-800"></strong>
+            <div class="confirmacion-advertencia">Los cilindros dejarán de aparecer en la Bodega de Vacíos, pero la entrega permanecerá registrada en el historial.</div>
+            <div class="ccss-popup-acciones">
+                <button id="confirmacionProveedorCancelar" type="button" class="ccss-popup-boton boton-cancelar">Cancelar</button>
+                <button id="confirmacionProveedorAceptar" type="button" class="ccss-popup-boton boton-confirmar-entrega">Confirmar entrega</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script src="js/configuracion.js"></script>
+<script src="js/popups.js"></script>
+<script src="js/datos.js"></script>
+<script src="js/navegacion.js"></script>
+<script src="js/institucionales.js"></script>
+<script src="js/vistas.js"></script>
+<script src="js/panel.js"></script>
+<script src="js/pacientes.js"></script>
+<script src="js/intercambio.js"></script>
+<script src="js/inventario.js"></script>
+<script src="js/nuevo-paciente.js"></script>
+<script src="js/nuevo-cilindro.js"></script>
+<script src="js/intercambio-ficha.js"></script>
+<script src="js/exportar-historial.js"></script>
+<script src="js/utilidades.js"></script>
+<script src="js/notificaciones.js"></script>
+<script src="js/reloj.js"></script>
+<script src="js/sesion.js"></script>
+<script src="js/inicio.js"></script>
+
+</body>
+</html>
