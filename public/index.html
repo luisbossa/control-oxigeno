@@ -10,6 +10,8 @@
     <meta name="theme-color" content="#1f5598">
     <link rel="stylesheet" href="css/utilidades.css">
     <link rel="stylesheet" href="css/estilos.css">
+    <link rel="stylesheet" href="css/temas.css">
+    <script src="js/tema.js"></script>
 </head>
 
 <body data-sesion="cargando">
@@ -141,6 +143,10 @@
         <!-- HEADER -->
         <header class="barra-superior h-14 sm:h-16 flex items-center justify-end gap-3 sm:gap-4 px-4 sm:px-8 sticky top-0 z-20">
             <button onclick="alternarBarraLateral()" class="lg:hidden mr-auto boton-icono" aria-label="Abrir menú"><svg class="icono" aria-hidden="true"><use href="img/iconos.svg#menu"></use></svg></button>
+            <div class="relative">
+                <button id="botonSelectorTema" onclick="alternarSelectorTema(event)" class="boton-icono" aria-label="Cambiar tema de color" title="Tema de color" aria-haspopup="true" aria-expanded="false"><svg class="icono" aria-hidden="true"><use href="img/iconos.svg#palette"></use></svg></button>
+                <div id="panelSelectorTema" class="selector-tema-panel" role="menu" hidden></div>
+            </div>
             <div class="relative">
                 <button id="botonNotificaciones" onclick="togglePanelNotificaciones(event)" class="relative boton-icono" aria-label="Abrir notificaciones">
                     <svg class="icono" aria-hidden="true"><use href="img/iconos.svg#bell"></use></svg>

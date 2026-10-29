@@ -86,6 +86,8 @@ public/                Todo lo que ve el navegador
                        contenido del SVG de lucide.dev dentro de un <symbol id="nombre">.
   css/estilos.css      Estilos propios del sistema (agregue aqui los estilos nuevos)
   css/utilidades.css   Clases utilitarias fijas (no editar)
+  css/temas.css        Temas de color (paletas y selector)
+  js/tema.js           Selector de tema; se carga en <head> antes que el resto
   js/                  Logica separada por modulo, cargada en este orden:
     configuracion.js     Variables generales e iconos
     popups.js            Avisos y confirmaciones

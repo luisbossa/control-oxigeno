@@ -75,7 +75,13 @@ function respaldarSinDetener() {
 // ---------------------------------------------------------------------------
 
 const servidor = http.createServer((req, res) => {
-  const { pathname } = new URL(req.url, "http://localhost");
+  let pathname;
+  try {
+    // Una ruta como "//" se interpreta como URL sin servidor y lanza error.
+    ({ pathname } = new URL(req.url, "http://localhost"));
+  } catch {
+    return responderJSON(res, 400, { mensaje: "Dirección inválida." });
+  }
 
   if (pathname.startsWith("/api/")) return manejarAPI(req, res);
   if (req.method === "GET") return servirArchivo(res, pathname);

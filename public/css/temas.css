@@ -1,0 +1,272 @@
+/* =========================================================
+   TEMAS DE COLOR
+   Cada tema define una paleta de acento (--acento-50 a 950, en
+   "R G B") y el tono del fondo. Se elige desde el botón de la paleta
+   en el encabezado (js/tema.js) y queda guardado en este navegador.
+   Para agregar un tema: copie un bloque [data-tema], cambie los
+   valores y agréguelo a TEMAS en js/tema.js.
+========================================================= */
+
+/* Azul institucional (predeterminado). */
+:root {
+    --acento-50: 240 245 251;
+    --acento-100: 223 233 246;
+    --acento-200: 191 210 236;
+    --acento-300: 147 179 221;
+    --acento-400: 95 140 200;
+    --acento-500: 55 108 178;
+    --acento-600: 31 85 152;
+    --acento-700: 25 69 125;
+    --acento-800: 23 58 102;
+    --acento-900: 20 47 82;
+    --acento-950: 13 30 54;
+
+    --azul: rgb(var(--acento-600));
+    --azul-oscuro: rgb(var(--acento-700));
+    --azul-claro: rgb(var(--acento-50));
+    --azul-borde: rgb(var(--acento-200));
+
+    /* Fondo de la página: gris claro teñido con el color del tema. */
+    --papel: color-mix(in srgb, rgb(var(--acento-100)) 40%, #f3f4f6);
+}
+
+:root[data-tema="verde"] {
+    --acento-50: 240 248 243;
+    --acento-100: 220 239 227;
+    --acento-200: 187 222 200;
+    --acento-300: 138 196 158;
+    --acento-400: 82 160 112;
+    --acento-500: 46 128 80;
+    --acento-600: 27 104 62;
+    --acento-700: 22 85 51;
+    --acento-800: 19 68 42;
+    --acento-900: 16 54 34;
+    --acento-950: 9 32 20;
+}
+
+:root[data-tema="turquesa"] {
+    --acento-50: 239 248 248;
+    --acento-100: 214 238 238;
+    --acento-200: 178 220 221;
+    --acento-300: 127 192 195;
+    --acento-400: 70 156 162;
+    --acento-500: 36 124 132;
+    --acento-600: 18 99 108;
+    --acento-700: 16 81 89;
+    --acento-800: 15 66 72;
+    --acento-900: 13 52 57;
+    --acento-950: 7 31 35;
+}
+
+:root[data-tema="morado"] {
+    --acento-50: 245 243 251;
+    --acento-100: 233 228 246;
+    --acento-200: 212 203 237;
+    --acento-300: 180 163 220;
+    --acento-400: 141 116 197;
+    --acento-500: 110 82 172;
+    --acento-600: 88 61 148;
+    --acento-700: 73 49 123;
+    --acento-800: 60 41 100;
+    --acento-900: 47 33 78;
+    --acento-950: 28 19 48;
+}
+
+:root[data-tema="vino"] {
+    --acento-50: 251 242 244;
+    --acento-100: 245 225 230;
+    --acento-200: 236 196 205;
+    --acento-300: 220 152 167;
+    --acento-400: 196 100 122;
+    --acento-500: 167 64 89;
+    --acento-600: 140 41 68;
+    --acento-700: 115 33 56;
+    --acento-800: 93 28 46;
+    --acento-900: 73 23 37;
+    --acento-950: 44 13 22;
+}
+
+:root[data-tema="terracota"] {
+    --acento-50: 252 244 239;
+    --acento-100: 247 228 216;
+    --acento-200: 239 202 180;
+    --acento-300: 224 160 125;
+    --acento-400: 203 113 70;
+    --acento-500: 179 82 40;
+    --acento-600: 151 62 27;
+    --acento-700: 124 51 23;
+    --acento-800: 100 42 20;
+    --acento-900: 79 34 17;
+    --acento-950: 47 19 9;
+}
+
+:root[data-tema="grafito"] {
+    --acento-50: 244 245 247;
+    --acento-100: 230 232 236;
+    --acento-200: 206 210 217;
+    --acento-300: 167 174 186;
+    --acento-400: 120 129 145;
+    --acento-500: 86 96 113;
+    --acento-600: 63 72 87;
+    --acento-700: 50 58 71;
+    --acento-800: 40 46 57;
+    --acento-900: 31 36 45;
+    --acento-950: 18 21 27;
+}
+
+::selection { background: rgb(var(--acento-200)); }
+.badge-blue { border-color: rgb(var(--acento-200)); }
+
+/* Clases azules de utilidades.css, ahora con la paleta del tema. */
+.border-blue-200{--tw-border-opacity:1;border-color:rgb(var(--acento-200)/var(--tw-border-opacity,1))}
+.border-blue-300{--tw-border-opacity:1;border-color:rgb(var(--acento-300)/var(--tw-border-opacity,1))}
+.border-blue-400{--tw-border-opacity:1;border-color:rgb(var(--acento-400)/var(--tw-border-opacity,1))}
+.border-l-blue-600{--tw-border-opacity:1;border-left-color:rgb(var(--acento-600)/var(--tw-border-opacity,1))}
+.bg-blue-100{--tw-bg-opacity:1;background-color:rgb(var(--acento-100)/var(--tw-bg-opacity,1))}
+.bg-blue-100\/70{background-color:rgb(var(--acento-100) / .7)}
+.bg-blue-50{--tw-bg-opacity:1;background-color:rgb(var(--acento-50)/var(--tw-bg-opacity,1))}
+.bg-blue-50\/50{background-color:rgb(var(--acento-50) / .5)}
+.bg-blue-50\/80{background-color:rgb(var(--acento-50) / .8)}
+.bg-blue-600{--tw-bg-opacity:1;background-color:rgb(var(--acento-600)/var(--tw-bg-opacity,1))}
+.bg-blue-700,.bg-cyan-700{--tw-bg-opacity:1;background-color:rgb(var(--acento-700)/var(--tw-bg-opacity,1))}
+.text-blue-300{--tw-text-opacity:1;color:rgb(var(--acento-300)/var(--tw-text-opacity,1))}
+.text-blue-600{--tw-text-opacity:1;color:rgb(var(--acento-600)/var(--tw-text-opacity,1))}
+.text-blue-700{--tw-text-opacity:1;color:rgb(var(--acento-700)/var(--tw-text-opacity,1))}
+.text-blue-800{--tw-text-opacity:1;color:rgb(var(--acento-800)/var(--tw-text-opacity,1))}
+.text-blue-900{--tw-text-opacity:1;color:rgb(var(--acento-900)/var(--tw-text-opacity,1))}
+.text-blue-950{--tw-text-opacity:1;color:rgb(var(--acento-950)/var(--tw-text-opacity,1))}
+.text-cyan-700{--tw-text-opacity:1;color:rgb(var(--acento-700)/var(--tw-text-opacity,1))}
+.accent-blue-700{accent-color:rgb(var(--acento-700))}
+.hover\:border-blue-400:hover{--tw-border-opacity:1;border-color:rgb(var(--acento-400)/var(--tw-border-opacity,1))}
+.hover\:border-blue-500:hover{--tw-border-opacity:1;border-color:rgb(var(--acento-500)/var(--tw-border-opacity,1))}
+.hover\:bg-blue-100:hover{--tw-bg-opacity:1;background-color:rgb(var(--acento-100)/var(--tw-bg-opacity,1))}
+.hover\:bg-blue-500:hover{--tw-bg-opacity:1;background-color:rgb(var(--acento-500)/var(--tw-bg-opacity,1))}
+.hover\:bg-blue-700:hover{--tw-bg-opacity:1;background-color:rgb(var(--acento-700)/var(--tw-bg-opacity,1))}
+.hover\:bg-blue-800:hover,.hover\:bg-cyan-800:hover{--tw-bg-opacity:1;background-color:rgb(var(--acento-800)/var(--tw-bg-opacity,1))}
+.hover\:text-blue-800:hover{--tw-text-opacity:1;color:rgb(var(--acento-800)/var(--tw-text-opacity,1))}
+.hover\:text-blue-900:hover{--tw-text-opacity:1;color:rgb(var(--acento-900)/var(--tw-text-opacity,1))}
+.group:hover .group-hover\:text-blue-800{--tw-text-opacity:1;color:rgb(var(--acento-800)/var(--tw-text-opacity,1))}
+
+/* =========================================================
+   SELECTOR DE TEMA (encabezado)
+========================================================= */
+.selector-tema-panel {
+    position: absolute;
+    right: 0;
+    top: calc(100% + 8px);
+    z-index: 50;
+    width: 240px;
+    padding: 0.75rem;
+    background: var(--superficie);
+    border: 1px solid var(--linea);
+    border-radius: var(--radio);
+    box-shadow: 0 12px 32px rgb(0 0 0 / 0.12);
+}
+
+.selector-tema-titulo {
+    font-size: 0.75rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+    color: var(--tinta-tenue);
+    margin: 0 0 0.5rem 0.25rem;
+}
+
+.opcion-tema {
+    display: flex;
+    align-items: center;
+    gap: 0.65rem;
+    width: 100%;
+    padding: 0.5rem;
+    border-radius: var(--radio-chico);
+    color: var(--tinta);
+    font-size: 0.9rem;
+    text-align: left;
+}
+
+.opcion-tema:hover { background: var(--papel); }
+.opcion-tema[aria-checked="true"] { background: var(--azul-claro); font-weight: 600; }
+
+.opcion-tema-muestra {
+    width: 22px;
+    height: 22px;
+    flex-shrink: 0;
+    border-radius: 50%;
+    border: 2px solid var(--superficie);
+    box-shadow: 0 0 0 1px var(--linea-fuerte);
+}
+
+.opcion-tema .icono { margin-left: auto; color: var(--azul); visibility: hidden; }
+.opcion-tema[aria-checked="true"] .icono { visibility: visible; }
+
+/* =========================================================
+   FONDOS DEL TEMA
+   Barra lateral oscura, barra superior blanca y encabezado de
+   cada módulo con degradado, todo en el color del tema.
+========================================================= */
+.barra-superior { background: rgb(255 255 255 / 0.92); }
+
+.barra-lateral {
+    background: rgb(var(--acento-950));
+    border-right-color: transparent;
+    color: #fff;
+}
+
+.marca,
+.sesion-usuario { border-color: rgb(255 255 255 / 0.1); }
+.marca-sello { background: rgb(var(--acento-500)); }
+.marca-sub,
+.navegacion-grupo,
+.sesion-rol { color: rgb(255 255 255 / 0.55); }
+
+.nav-item,
+.subinstitucional { color: rgb(255 255 255 / 0.75); }
+.nav-item .icono,
+.navegacion-flecha { color: rgb(255 255 255 / 0.55); }
+.nav-item:hover,
+.subinstitucional:hover { background: rgb(255 255 255 / 0.07); color: #fff; }
+
+.nav-item.active,
+.subinstitucional.activo {
+    background: rgb(255 255 255 / 0.12);
+    color: #fff;
+}
+.nav-item.active { box-shadow: inset 3px 0 0 rgb(var(--acento-300)); }
+.nav-item.active .icono { color: rgb(var(--acento-200)); }
+.submenu { border-left-color: rgb(255 255 255 / 0.12); }
+
+.sesion-avatar { background: rgb(var(--acento-500)); color: #fff; }
+.sesion-accion {
+    background: rgb(255 255 255 / 0.05);
+    border-color: rgb(255 255 255 / 0.12);
+    color: rgb(255 255 255 / 0.75);
+}
+.sesion-accion:hover { background: rgb(255 255 255 / 0.1); border-color: rgb(255 255 255 / 0.22); color: #fff; }
+.sesion-accion-salir:hover { background: rgb(185 28 28 / 0.35); border-color: rgb(248 113 113 / 0.45); color: #fee2e2; }
+
+.encabezado-vista {
+    align-items: center;
+    padding: 1.4rem 1.6rem;
+    border-radius: 14px;
+    border: 1px solid rgb(var(--acento-400) / 0.45);
+    background: linear-gradient(120deg, rgb(var(--acento-900)), rgb(var(--acento-700)) 55%, rgb(var(--acento-500)));
+    box-shadow: 0 10px 28px rgb(var(--acento-900) / 0.22);
+    color: #fff;
+}
+.encabezado-vista .encabezado-vista-seccion {
+    display: inline-block;
+    padding: 0.2rem 0.65rem;
+    border: 1px solid rgb(255 255 255 / 0.25);
+    border-radius: 999px;
+    background: rgb(255 255 255 / 0.12);
+    color: rgb(var(--acento-100));
+    font-weight: 500;
+}
+.encabezado-vista .encabezado-vista-titulo { color: #fff; }
+.encabezado-vista .encabezado-vista-texto { color: rgb(255 255 255 / 0.8); }
+.encabezado-vista .boton-primario {
+    background: rgb(var(--acento-600));
+    border-color: rgb(255 255 255 / 0.45);
+    box-shadow: 0 4px 14px rgb(0 0 0 / 0.18);
+}
+.encabezado-vista .boton-primario:hover { background: rgb(var(--acento-400)); }
