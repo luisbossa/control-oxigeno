@@ -14,6 +14,7 @@ function contarCilindrosInstitucionales(tipo = null) {
 }
 
 function abrirModalUbicacionInstitucional(tipo = null, id = null) {
+    if (!exigirPermisoEdicion()) return;
     const tiposValidos = ["ebais", "ambulancias", "emergencias", "manifold"];
     const tipoInicial = tiposValidos.includes(tipo)
         ? tipo
@@ -71,6 +72,7 @@ function crearEstructuraUbicacionInstitucional(tipo, datos) {
 }
 
 function guardarUbicacionInstitucional() {
+    if (!exigirPermisoEdicion()) return;
     const esEdicion = Boolean(ubicacionInstitucionalEnEdicion);
     const tipo = ubicacionInstitucionalEnEdicion?.tipo || document.getElementById("ubicacionInstitucionalTipo").value;
     const ubicacionActual = ubicacionInstitucionalEnEdicion
@@ -115,6 +117,7 @@ function guardarUbicacionInstitucional() {
 }
 
 async function eliminarUbicacionInstitucional(tipo, id) {
+    if (!exigirPermisoEdicion()) return;
     const ubicacion = (ubicacionesInstitucionales[tipo] || []).find(item => item.id === id);
     if (!ubicacion) return;
     const cilindrosAsociados = new Set([...(ubicacion.cilindros || []), ...(ubicacion.bancoIzquierdo || []), ...(ubicacion.bancoDerecho || [])]);
@@ -200,7 +203,7 @@ function renderListadoInstitucional(contenedor, tipo) {
     contenedor.innerHTML = `
         <div class="flex flex-col md:flex-row md:items-end justify-between gap-4 mb-5">
             <div><p class="text-xs font-black uppercase tracking-wider text-blue-600">${configuracion.descripcion}</p><h4 class="text-2xl font-black text-slate-900 mt-1">${configuracion.icono} ${configuracion.titulo}</h4><p class="text-sm text-slate-500 mt-1">${ubicaciones.length} ubicación(es) registrada(s)</p></div>
-            <div class="flex flex-col sm:flex-row gap-2 w-full md:w-auto"><input id="buscarInstitucional" oninput="filtrarTarjetasInstitucionales(this.value)" placeholder="Buscar ubicación..." class="w-full md:w-72 border-2 border-slate-300 rounded-xl px-4 py-3 bg-white font-semibold"><button onclick="abrirModalUbicacionInstitucional('${tipo}')" class="px-5 py-3 bg-cyan-700 hover:bg-cyan-800 text-white rounded-xl font-extrabold whitespace-nowrap">+ Nueva ubicación</button></div>
+            <div class="flex flex-col sm:flex-row gap-2 w-full md:w-auto"><input id="buscarInstitucional" oninput="filtrarTarjetasInstitucionales(this.value)" placeholder="Buscar ubicación..." class="w-full md:w-72 border-2 border-slate-300 rounded-xl px-4 py-3 bg-white font-semibold"><button onclick="abrirModalUbicacionInstitucional('${tipo}')" class="solo-administrador px-5 py-3 bg-cyan-700 hover:bg-cyan-800 text-white rounded-xl font-extrabold whitespace-nowrap">+ Nueva ubicación</button></div>
         </div>
         <div id="rejillaInstitucional" class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-5">
             ${ubicaciones.map(ubicacion => tarjetaUbicacionInstitucional(tipo, ubicacion, configuracion.icono)).join("")}
@@ -221,7 +224,7 @@ function tarjetaUbicacionInstitucional(tipo, ubicacion, icono) {
         <div class="flex items-start justify-between gap-3"><div class="flex gap-3"><div class="w-11 h-11 rounded-xl bg-blue-100 flex items-center justify-center text-xl">${icono}</div><div><h5 class="font-black text-slate-900">${textoSeguro(ubicacion.nombre)}</h5><p class="text-xs font-semibold text-slate-500 mt-0.5">${textoSeguro(ubicacion.subtitulo)}</p></div></div>${estado}</div>
         <div class="grid grid-cols-2 gap-3 my-5"><div class="bg-slate-50 rounded-xl p-3"><p class="text-[10px] font-black uppercase text-slate-400">${tipo === "ambulancias" ? "Cilindros" : "Cilindro actual"}</p><p class="text-xl font-black text-slate-900">${tipo === "ebais" ? (ubicacion.cilindroActual || "—") : cantidad}</p></div><div class="bg-slate-50 rounded-xl p-3"><p class="text-[10px] font-black uppercase text-slate-400">Cambios</p><p class="text-xl font-black text-slate-900">${(tipo === "ebais" || tipo === "ambulancias") ? (ubicacion.historial?.length || 0) : ubicacion.minimo}</p></div></div>
         <div class="space-y-2 text-sm"><p class="flex justify-between gap-3"><span class="text-slate-500">Responsable</span><strong class="text-slate-700 text-right">${textoSeguro(tipo === "ebais" ? (ubicacion.responsableCilindro || "Sin asignar") : tipo === "ambulancias" ? (ubicacion.choferResponsable || "Sin asignar") : ubicacion.responsable)}</strong></p></div>
-        <div class="grid grid-cols-3 gap-2 mt-5"><button onclick="abrirDetalleInstitucional('${tipo}', '${ubicacion.id}')" class="col-span-3 py-2.5 rounded-xl bg-slate-900 hover:bg-blue-700 text-white font-extrabold text-sm transition-colors">Ver información completa</button><button onclick="abrirModalUbicacionInstitucional('${tipo}', '${ubicacion.id}')" class="col-span-2 py-2.5 rounded-xl bg-amber-50 border-2 border-amber-200 text-amber-800 font-extrabold text-sm">Editar</button><button onclick="eliminarUbicacionInstitucional('${tipo}', '${ubicacion.id}')" class="py-2.5 rounded-xl bg-red-50 border-2 border-red-200 text-red-700 font-extrabold text-sm">Eliminar</button></div>
+        <div class="grid grid-cols-3 gap-2 mt-5"><button onclick="abrirDetalleInstitucional('${tipo}', '${ubicacion.id}')" class="col-span-3 py-2.5 rounded-xl bg-slate-900 hover:bg-blue-700 text-white font-extrabold text-sm transition-colors">Ver información completa</button><button onclick="abrirModalUbicacionInstitucional('${tipo}', '${ubicacion.id}')" class="solo-administrador col-span-2 py-2.5 rounded-xl bg-amber-50 border-2 border-amber-200 text-amber-800 font-extrabold text-sm">Editar</button><button onclick="eliminarUbicacionInstitucional('${tipo}', '${ubicacion.id}')" class="solo-administrador py-2.5 rounded-xl bg-red-50 border-2 border-red-200 text-red-700 font-extrabold text-sm">Eliminar</button></div>
     </article>`;
 }
 
@@ -329,7 +332,7 @@ function renderDetalleEbais(contenedor, ebais, tipo = "ebais") {
         <button onclick="volverAListadoInstitucional()" class="mb-4 text-blue-700 hover:text-blue-900 font-extrabold text-sm"><svg class="icono" aria-hidden="true"><use href="img/iconos.svg#arrow-left"></use></svg> Volver a ${nombresSeccion[tipo] || "Cilindros institucionales"}</button>
         <div class="card p-5 sm:p-6 mb-5 flex flex-col md:flex-row md:items-center justify-between gap-5">
             <div><p class="encabezado-vista-seccion">Expediente institucional</p><h4 class="text-2xl font-black text-slate-900 mt-0.5">${textoSeguro(ebais.nombre)}</h4><p class="text-slate-500 text-sm mt-1">Control de cilindro, regulador e historial de cambios</p></div>
-            <div class="flex flex-wrap gap-2"><button onclick="abrirModalUbicacionInstitucional('${tipo}', '${ebais.id}')" class="boton boton-secundario"><svg class="icono" aria-hidden="true"><use href="img/iconos.svg#pencil"></use></svg> Editar ubicación</button><button onclick="abrirCambioEbais('${ebais.id}', '${tipo}')" class="boton boton-primario"><svg class="icono" aria-hidden="true"><use href="img/iconos.svg#refresh-cw"></use></svg> ${cilindro ? "Registrar nuevo cambio" : "Registrar instalación"}</button></div>
+            <div class="flex flex-wrap gap-2"><button onclick="abrirModalUbicacionInstitucional('${tipo}', '${ebais.id}')" class="boton boton-secundario solo-administrador"><svg class="icono" aria-hidden="true"><use href="img/iconos.svg#pencil"></use></svg> Editar ubicación</button><button onclick="abrirCambioEbais('${ebais.id}', '${tipo}')" class="boton boton-primario"><svg class="icono" aria-hidden="true"><use href="img/iconos.svg#refresh-cw"></use></svg> ${cilindro ? "Registrar nuevo cambio" : "Registrar instalación"}</button></div>
         </div>
         <div class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-5 mb-5">
             <div class="md:col-span-2 card p-6 border-2 ${cilindro ? "border-emerald-300" : "border-slate-200"}">

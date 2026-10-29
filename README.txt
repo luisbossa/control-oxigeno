@@ -17,6 +17,13 @@ Primer ingreso: si la base esta vacia, el sistema pide crear la cuenta
 administradora. Desde "Usuarios" (icono en la parte inferior del menu) el
 administrador crea las cuentas del resto del equipo.
 
+Perfiles:
+- Administrador: usa el sistema y ademas registra, edita y elimina pacientes,
+  cilindros y ubicaciones institucionales; tambien administra los usuarios.
+- Funcionario: solo usa el sistema (intercambios, devoluciones, cambios en
+  EBAIS/ambulancias, devolucion al proveedor, boletas). No puede registrar,
+  editar ni eliminar informacion; el servidor tambien lo impide.
+
 El servidor local solo acepta conexiones desde esta misma computadora.
 
 DATOS

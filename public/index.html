@@ -710,7 +710,7 @@
                 </div>
                 <button
                     onclick="abrirNuevoPaciente()"
-                    class="boton boton-primario">
+                    class="boton boton-primario solo-administrador">
                     <svg class="icono" aria-hidden="true"><use href="img/iconos.svg#plus"></use></svg> Nuevo paciente
                 </button>
             </header>
@@ -882,7 +882,7 @@
                     </p>
                     <button
                         onclick="editarPaciente(pacienteSeleccionado.id)"
-                        class="mt-3 text-sm font-extrabold text-blue-700 hover:text-blue-900">
+                        class="solo-administrador mt-3 text-sm font-extrabold text-blue-700 hover:text-blue-900">
                         Editar cilindros y reguladores
                     </button>
                 </div>
@@ -969,7 +969,7 @@
                 </div>
                 <button
                     onclick="abrirNuevoCilindro()"
-                    class="boton boton-primario">
+                    class="boton boton-primario solo-administrador">
                     <svg class="icono" aria-hidden="true"><use href="img/iconos.svg#plus"></use></svg> Nuevo cilindro
                 </button>
             </header>
@@ -1558,7 +1558,7 @@
                 <label class="campo"><span class="campo-etiqueta">Usuario</span><input id="nuevoUsuarioCuenta" class="campo-entrada" autocomplete="off" autocapitalize="none" spellcheck="false" required></label>
                 <label class="campo"><span class="campo-etiqueta">Contraseña temporal</span><input id="nuevoUsuarioClave" type="password" class="campo-entrada" autocomplete="new-password" minlength="8" required></label>
                 <label class="campo"><span class="campo-etiqueta">Perfil</span>
-                    <select id="nuevoUsuarioRol" class="campo-entrada"><option value="funcionario">Funcionario</option><option value="administrador">Administrador</option></select>
+                    <select id="nuevoUsuarioRol" class="campo-entrada"><option value="funcionario">Funcionario (solo usa el sistema)</option><option value="administrador">Administrador (puede editar información)</option></select>
                 </label>
                 <button type="submit" class="boton boton-primario w-full"><svg class="icono" aria-hidden="true"><use href="img/iconos.svg#plus"></use></svg> Crear usuario</button>
             </form>

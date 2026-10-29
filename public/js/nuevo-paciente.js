@@ -159,6 +159,7 @@ function equiposPrestamoDe(equipos) {
 }
 
 function abrirNuevoPaciente() {
+    if (!exigirPermisoEdicion()) return;
 
     pacienteEnEdicionId = null;
     document.getElementById("tituloModalPaciente").textContent = "Nuevo paciente";
@@ -198,6 +199,7 @@ function cerrarModalPaciente() {
 }
 
 function editarPaciente(id) {
+    if (!exigirPermisoEdicion()) return;
     const paciente = pacientes.find(p => p.id === id);
     if (!paciente) return;
 
@@ -219,6 +221,7 @@ function editarPaciente(id) {
 }
 
 function guardarPaciente() {
+    if (!exigirPermisoEdicion()) return;
     if (pacienteEnEdicionId === null) {
         guardarNuevoPaciente();
         return;
@@ -259,6 +262,7 @@ function guardarPaciente() {
 }
 
 async function eliminarPaciente(id) {
+    if (!exigirPermisoEdicion()) return;
     const paciente = pacientes.find(p => p.id === id);
     if (!paciente) return;
     if ((paciente.cilindros || []).length) {

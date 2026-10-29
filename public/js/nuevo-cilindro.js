@@ -3,6 +3,7 @@
 ========================================================= */
 
 function abrirNuevoCilindro() {
+    if (!exigirPermisoEdicion()) return;
 
     cilindroEnEdicionNumero = null;
     document.getElementById("tituloModalCilindro").textContent = "Nuevo cilindro";
@@ -44,6 +45,7 @@ function cerrarModalCilindro() {
 }
 
 function editarCilindro(numero) {
+    if (!exigirPermisoEdicion()) return;
     const cilindro = cilindros.find(c => c.numero === numero);
     if (!cilindro) return;
     cilindroEnEdicionNumero = numero;
@@ -58,6 +60,7 @@ function editarCilindro(numero) {
 }
 
 function guardarCilindro() {
+    if (!exigirPermisoEdicion()) return;
     if (cilindroEnEdicionNumero === null) {
         guardarNuevoCilindro();
         return;
@@ -132,6 +135,7 @@ function guardarCilindro() {
 }
 
 async function eliminarCilindro(numero) {
+    if (!exigirPermisoEdicion()) return;
     const cilindro = cilindros.find(c => c.numero === numero);
     if (!cilindro) return;
     const pacienteAsignado = pacientes.find(p => (p.cilindros || []).includes(numero) || p.cilindroActual === numero || p.id === cilindro.pacienteId);

@@ -187,8 +187,38 @@ function validarLista(lista, nombre) {
   return lista;
 }
 
+// Un funcionario opera el sistema (intercambios, devoluciones, cambios en
+// ubicaciones), pero no registra ni elimina pacientes, cilindros ni ubicaciones.
+async function validarPermisosFuncionario(base, cambios) {
+  const denegar = () => {
+    throw Object.assign(new Error("Su cuenta no tiene permiso para registrar, editar o eliminar información. Solicítelo a un administrador."), { estado: 403 });
+  };
+  const existe = async (sql, args) => (await base.execute({ sql, args })).rows.length > 0;
+  const { pacientes = {}, cilindros = {}, ubicaciones = {}, devoluciones = {} } = cambios;
+
+  if (validarLista(pacientes.eliminar, "pacientes").length || validarLista(ubicaciones.eliminar, "ubicaciones").length || validarLista(devoluciones.eliminar, "devoluciones").length)
+    denegar();
+
+  // Solo salen del inventario los cilindros entregados al proveedor en esta misma sincronización.
+  const entregados = new Set(validarLista(devoluciones.guardar, "devoluciones").flatMap((d) => (d?.cilindros || []).map((c) => String(c.numero))));
+  if (validarLista(cilindros.eliminar, "cilindros").some((numero) => !entregados.has(String(numero)))) denegar();
+
+  for (const paciente of validarLista(pacientes.guardar, "pacientes"))
+    if (!(await existe("SELECT 1 FROM pacientes WHERE id = ?", [String(paciente?.id)]))) denegar();
+
+  // Un cilindro desconocido recibido en un intercambio entra a la bodega como "Recibido".
+  for (const cilindro of validarLista(cilindros.guardar, "cilindros"))
+    if (cilindro?.estado !== "Recibido" && !(await existe("SELECT 1 FROM cilindros WHERE numero = ?", [String(cilindro?.numero)]))) denegar();
+
+  // Con la base vacía, el navegador crea las ubicaciones iniciales.
+  if (await existe("SELECT 1 FROM ubicaciones LIMIT 1", []))
+    for (const item of validarLista(ubicaciones.guardar, "ubicaciones"))
+      if (!(await existe("SELECT 1 FROM ubicaciones WHERE tipo = ? AND id = ?", [String(item?.tipo), String(item?.datos?.id)]))) denegar();
+}
+
 async function aplicarCambios(cambios, usuario) {
   const base = await obtenerBase();
+  if (usuario.rol !== "administrador") await validarPermisosFuncionario(base, cambios);
   const fecha = ahora();
   const sentencias = [];
   const registrar = (entidad, id, accion) =>

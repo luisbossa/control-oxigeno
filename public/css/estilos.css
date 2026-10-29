@@ -499,6 +499,9 @@ body[data-sesion="cargando"] #aplicacionPrincipal,
 body[data-sesion="acceso"] #aplicacionPrincipal,
 body[data-sesion="activa"] #pantallaAcceso { display: none; }
 
+/* El funcionario usa el sistema pero no edita información (ver sesion.js). */
+body[data-rol="funcionario"] .solo-administrador { display: none !important; }
+
 .pantalla-acceso {
     min-height: 100vh;
     display: grid;

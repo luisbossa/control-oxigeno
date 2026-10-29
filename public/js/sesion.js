@@ -63,6 +63,19 @@ function aplicarUsuario(usuario) {
     document.getElementById("rolUsuarioSesion").textContent = usuario.rol === "administrador" ? "Administrador" : "Funcionario";
     document.getElementById("inicialesUsuario").textContent = iniciales(usuario.nombre) || "US";
     document.getElementById("botonGestionUsuarios").hidden = usuario.rol !== "administrador";
+    document.body.dataset.rol = usuario.rol; // Oculta los botones .solo-administrador al funcionario.
+}
+
+// Solo el administrador registra, edita o elimina pacientes, cilindros y ubicaciones.
+// El funcionario usa el sistema: intercambios, devoluciones, cambios y boletas.
+function puedeEditarInformacion() {
+    return usuarioEnSesion?.rol === "administrador";
+}
+
+function exigirPermisoEdicion() {
+    if (puedeEditarInformacion()) return true;
+    mostrarPopup("Su cuenta es de funcionario: puede usar el sistema, pero no registrar, editar ni eliminar información. Solicite el cambio a un administrador.", "advertencia");
+    return false;
 }
 
 // Envía los cambios que quedaron pendientes cuando venció la sesión (solo si vuelve el mismo usuario).

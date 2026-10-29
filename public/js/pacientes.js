@@ -107,11 +107,11 @@ function renderPacientes() {
                             <svg class="icono" aria-hidden="true"><use href="img/iconos.svg#file-text"></use></svg>
                         </button>
                         <button onclick="editarPaciente(${paciente.id})" title="Editar paciente" aria-label="Editar paciente"
-                            class="inline-flex items-center justify-center w-9 h-9 rounded-lg bg-amber-50 text-amber-700 border border-amber-200 hover:bg-amber-100 hover:text-amber-900 transition-colors">
+                            class="solo-administrador inline-flex items-center justify-center w-9 h-9 rounded-lg bg-amber-50 text-amber-700 border border-amber-200 hover:bg-amber-100 hover:text-amber-900 transition-colors">
                             <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="w-4 h-4" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" d="M12 20h9"/><path stroke-linecap="round" stroke-linejoin="round" d="M16.5 3.5a2.12 2.12 0 0 1 3 3L8 18l-4 1 1-4Z"/></svg>
                         </button>
                         <button onclick="eliminarPaciente(${paciente.id})" title="Eliminar paciente" aria-label="Eliminar paciente"
-                            class="inline-flex items-center justify-center w-9 h-9 rounded-lg bg-red-50 text-red-600 border border-red-200 hover:bg-red-100 hover:text-red-800 transition-colors">
+                            class="solo-administrador inline-flex items-center justify-center w-9 h-9 rounded-lg bg-red-50 text-red-600 border border-red-200 hover:bg-red-100 hover:text-red-800 transition-colors">
                             <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="w-4 h-4" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" d="M3 6h18M8 6V4h8v2m-9 0 1 14h8l1-14M10 10v6m4-6v6"/></svg>
                         </button>
                     </div>
