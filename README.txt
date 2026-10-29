@@ -87,11 +87,10 @@ public/                Todo lo que ve el navegador
     institucionales.js   EBAIS, ambulancias, emergencias y manifold
     vistas.js            Cambio de vista y seleccion de bodega
     pacientes.js         Listado, ficha, regulador e historial del paciente
-    intercambio.js       Intercambio de cilindros y boleta
+    intercambio.js       Intercambio, boletas de salida, prestamo y devolucion
     inventario.js        Bodegas de llenos y vacios, devolucion al proveedor
     nuevo-paciente.js    Registro y edicion de pacientes
     nuevo-cilindro.js    Registro y edicion de cilindros
-    intercambio-ficha.js Intercambio desde la ficha del paciente
     exportar-historial.js Exportar historial del paciente
     utilidades.js        Funciones de apoyo (fechas, formatos)
     notificaciones.js    Centro de notificaciones
