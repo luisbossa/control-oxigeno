@@ -158,7 +158,7 @@ function agregarReguladorPacienteFormulario(regulador = {}) {
             <div class="flex items-start justify-between gap-3 mb-3"><p class="font-black text-amber-950">Regulador en préstamo</p><button type="button" onclick="this.closest('.fila-regulador-paciente').remove(); actualizarMensajesEquiposPaciente()" class="text-red-600 font-extrabold text-sm">Quitar</button></div>
             <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
                 <div><label class="block text-xs font-black text-slate-600 uppercase mb-1">Tipo *</label><select data-campo="tipo" class="w-full border-2 border-amber-300 rounded-xl px-4 py-3 bg-white"><option value="">Seleccione...</option><option value="Rosca" ${regulador.tipo === "Rosca" ? "selected" : ""}>Rosca</option><option value="Pin" ${regulador.tipo === "Pin" ? "selected" : ""}>Pin</option></select></div>
-                <div><label class="block text-xs font-black text-slate-600 uppercase mb-1">Número de serie</label><input data-campo="serie" value="${textoSeguro(regulador.serie || "")}" class="w-full border-2 border-amber-300 rounded-xl px-4 py-3 bg-white" placeholder="Ej. REG-00125"></div>
+                <div><label class="block text-xs font-black text-slate-600 uppercase mb-1">Número de serie</label><input data-campo="serie" value="${textoSeguro(regulador.serie || "")}" class="w-full border-2 border-amber-300 rounded-xl px-4 py-3 bg-white"></div>
             </div>
         </div>`);
     actualizarMensajesEquiposPaciente();
