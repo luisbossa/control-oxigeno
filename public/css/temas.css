@@ -205,7 +205,16 @@
 }
 .nav-item.active { box-shadow: inset 3px 0 0 rgb(var(--acento-300)); }
 .nav-item.active .icono { color: rgb(var(--acento-200)); }
-.submenu { border-left-color: rgb(255 255 255 / 0.12); }
+.submenu { background: rgb(255 255 255 / 0.04); }
+.submenu::before { background: rgb(255 255 255 / 0.14); }
+.subinstitucional.activo { font-weight: 600; }
+.subinstitucional.activo .icono { color: rgb(var(--acento-200)); opacity: 1; }
+.subinstitucional::before { background: rgb(var(--acento-300)); box-shadow: 0 0 0 3px rgb(var(--acento-950)); }
+
+/* Fuera de Institucionales, la última sección elegida no se marca como activa. */
+#nav-institucionales:not(.active) + .submenu .subinstitucional.activo { background: transparent; color: rgb(255 255 255 / 0.75); font-weight: 400; }
+#nav-institucionales:not(.active) + .submenu .subinstitucional.activo .icono { color: inherit; opacity: 0.8; }
+#nav-institucionales:not(.active) + .submenu .subinstitucional.activo::before { transform: translateY(-50%) scale(0); }
 
 .sesion-avatar { background: rgb(var(--acento-500)); color: #fff; }
 .sesion-accion {
@@ -242,3 +251,10 @@
     box-shadow: 0 4px 14px rgb(0 0 0 / 0.18);
 }
 .encabezado-vista .boton-primario:hover { background: rgb(var(--acento-400)); }
+
+/* Barra de desplazamiento delgada en la barra lateral oscura. */
+.barra-lateral { scrollbar-width: thin; scrollbar-color: rgb(255 255 255 / 0.18) transparent; }
+.barra-lateral::-webkit-scrollbar { width: 8px; }
+.barra-lateral::-webkit-scrollbar-track { background: transparent; }
+.barra-lateral::-webkit-scrollbar-thumb { background: rgb(255 255 255 / 0.18); border-radius: 999px; }
+.barra-lateral::-webkit-scrollbar-thumb:hover { background: rgb(255 255 255 / 0.3); }
