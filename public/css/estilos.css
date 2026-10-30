@@ -133,6 +133,9 @@ body {
     animation: abrir-submenu 0.18s ease-out;
 }
 
+/* .submenu define display, así que el submenú cerrado necesita ocultarse explícitamente. */
+.submenu.hidden { display: none; }
+
 .submenu::before {
     content: "";
     position: absolute;
@@ -279,6 +282,11 @@ body {
     border: 1px solid var(--linea);
     box-shadow: none;
 }
+
+/* Una tarjeta que es <button> pierde el fondo por el reinicio de botones de
+   utilidades.css; button:where(.card) lo recupera sin ganarle a las bg-*. */
+button:where(.card) { background: var(--superficie); }
+button:where(.card):hover { box-shadow: 0 10px 24px rgb(0 0 0 / 0.07); }
 
 :where(.paso) {
     background: var(--superficie);
