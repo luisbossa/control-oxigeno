@@ -678,41 +678,34 @@
 
                   <div>
                     <label
+                      for="tipoCilindroNuevo"
                       class="block text-xs font-black text-slate-800 uppercase tracking-wider mb-2"
                     >
                       Tipo de cilindro *
                     </label>
 
-                    <select
+                    <!-- Solo lectura: se toma del cilindro registrado en el inventario. -->
+                    <input
                       id="tipoCilindroNuevo"
-                      class="w-full border-2 border-slate-400 rounded-xl px-4 py-3.5 bg-slate-50 font-black text-slate-900 text-base"
-                    >
-                      <option value="">Seleccione</option>
-
-                      <option value="220 PC - Rosca">220 PC - Rosca</option>
-
-                      <option value="30 PC - Pin Index">
-                        30 PC - Pin Index
-                      </option>
-
-                      <option value="30 PC - Rosca">30 PC - Rosca</option>
-                    </select>
+                      readonly
+                      tabindex="-1"
+                      class="campo-solo-lectura w-full border-2 rounded-xl px-4 py-3.5 font-black text-base"
+                    />
                   </div>
 
                   <div>
                     <label
+                      for="tamanoCilindroNuevo"
                       class="block text-xs font-black text-slate-800 uppercase tracking-wider mb-2"
                     >
                       Tamaño del cilindro *
                     </label>
-                    <select
+                    <input
                       id="tamanoCilindroNuevo"
-                      class="w-full border-2 border-slate-400 rounded-xl px-4 py-3.5 bg-slate-50 font-black text-slate-900 text-base"
-                    >
-                      <option value="">Seleccione</option>
-                      <option value="Grande">Grande</option>
-                      <option value="Pequeño">Pequeño</option>
-                    </select>
+                      readonly
+                      tabindex="-1"
+                      class="campo-solo-lectura w-full border-2 rounded-xl px-4 py-3.5 font-black text-base"
+                    />
                   </div>
                 </div>
 

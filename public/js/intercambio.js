@@ -275,6 +275,10 @@ function validarCilindroNuevo() {
     const resultado =
         document.getElementById("resultadoCilindroNuevo");
 
+    // Tipo y tamaño son de solo lectura: se vacían hasta que el cilindro sea válido.
+    document.getElementById("tipoCilindroNuevo").value = "";
+    document.getElementById("tamanoCilindroNuevo").value = "";
+
 
     if (!numero) {
 
@@ -319,6 +323,20 @@ function validarCilindroNuevo() {
     }
 
 
+    if (tamanoCilindro(cilindro) === "No indicado") {
+
+        resultado.innerHTML = `
+            <div class="bg-amber-50 border-2 border-amber-300 rounded-xl p-3 text-sm text-amber-900 font-bold shadow-sm">
+                <svg class="icono" aria-hidden="true"><use href="img/iconos.svg#triangle-alert"></use></svg> Este cilindro no tiene tamaño registrado.
+                Un administrador debe corregirlo en Inventario antes de entregarlo.
+            </div>
+        `;
+
+        return;
+
+    }
+
+
     resultado.innerHTML = `
 
         <div class="bg-emerald-50 border-2 border-emerald-300 rounded-xl p-3 text-sm text-emerald-950 font-bold shadow-sm">
@@ -336,7 +354,7 @@ function validarCilindroNuevo() {
         cilindro.tipo;
 
     document.getElementById("tamanoCilindroNuevo").value =
-        tamanoCilindro(cilindro) === "No indicado" ? "" : tamanoCilindro(cilindro);
+        tamanoCilindro(cilindro);
 
 }
 
@@ -648,7 +666,7 @@ function confirmarTransaccion() {
 
     if (!tipoNuevo) {
 
-        alert("Debe seleccionar el tipo de cilindro.");
+        alert("Ingrese un número de cilindro disponible para cargar su tipo.");
         return;
 
     }
@@ -656,7 +674,7 @@ function confirmarTransaccion() {
 
     if (!tamanoNuevo) {
 
-        alert("Debe seleccionar si el cilindro es grande o pequeño.");
+        alert("El cilindro no tiene tamaño registrado. Corríjalo en Inventario antes de entregarlo.");
         return;
 
     }

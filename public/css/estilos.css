@@ -409,6 +409,15 @@ input:focus, select:focus, textarea:focus {
     background: var(--superficie);
 }
 
+/* Dato que se muestra pero no se puede cambiar (p. ej. tipo y tamaño del cilindro en el intercambio). */
+.campo-solo-lectura {
+    background: var(--papel);
+    border-color: var(--linea);
+    color: var(--tinta);
+    cursor: default;
+    pointer-events: none;
+}
+
 /* Referencia médica adjunta (formulario de paciente). */
 .referencia-adjunto { margin-top: 0.75rem; }
 
