@@ -9,8 +9,6 @@ const TEMAS = [
     { id: "verde", nombre: "Verde", muestra: "#1b683e" },
     { id: "turquesa", nombre: "Turquesa", muestra: "#12636c" },
     { id: "morado", nombre: "Morado", muestra: "#583d94" },
-    { id: "vino", nombre: "Vino", muestra: "#8c2944" },
-    { id: "terracota", nombre: "Terracota", muestra: "#973e1b" },
     { id: "grafito", nombre: "Grafito", muestra: "#3f4857" }
 ];
 const CLAVE_TEMA = "ccss_tema";

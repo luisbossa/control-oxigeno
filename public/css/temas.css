@@ -72,34 +72,6 @@
     --acento-950: 28 19 48;
 }
 
-:root[data-tema="vino"] {
-    --acento-50: 251 242 244;
-    --acento-100: 245 225 230;
-    --acento-200: 236 196 205;
-    --acento-300: 220 152 167;
-    --acento-400: 196 100 122;
-    --acento-500: 167 64 89;
-    --acento-600: 140 41 68;
-    --acento-700: 115 33 56;
-    --acento-800: 93 28 46;
-    --acento-900: 73 23 37;
-    --acento-950: 44 13 22;
-}
-
-:root[data-tema="terracota"] {
-    --acento-50: 252 244 239;
-    --acento-100: 247 228 216;
-    --acento-200: 239 202 180;
-    --acento-300: 224 160 125;
-    --acento-400: 203 113 70;
-    --acento-500: 179 82 40;
-    --acento-600: 151 62 27;
-    --acento-700: 124 51 23;
-    --acento-800: 100 42 20;
-    --acento-900: 79 34 17;
-    --acento-950: 47 19 9;
-}
-
 :root[data-tema="grafito"] {
     --acento-50: 244 245 247;
     --acento-100: 230 232 236;
