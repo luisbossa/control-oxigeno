@@ -217,6 +217,8 @@ function abrirPaciente(id) {
 
     document.getElementById("detalleReferencia").textContent =
         pacienteSeleccionado.referencia || "—";
+    document.getElementById("detalleReferenciaDocumento").hidden =
+        !pacienteSeleccionado.referenciaDocumento;
 
     renderInfoReguladorPaciente();
 

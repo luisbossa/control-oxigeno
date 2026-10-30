@@ -9,7 +9,10 @@ const db = require("./base-datos");
 
 const pbkdf2 = promisify(crypto.pbkdf2);
 const NOMBRE_COOKIE = "ccss_sesion";
-const DURACION_SESION = 8 * 60 * 60 * 1000;
+// Horas que dura la sesión sin actividad (se renueva mientras el sistema está abierto).
+// Se puede cambiar con la variable SESION_HORAS.
+const HORAS_SESION = Number(process.env.SESION_HORAS) > 0 ? Number(process.env.SESION_HORAS) : 12;
+const DURACION_SESION = HORAS_SESION * 60 * 60 * 1000;
 const MAXIMO_INTENTOS = 5;
 const BLOQUEO_INTENTOS = 10 * 60 * 1000;
 const intentosFallidos = new Map();

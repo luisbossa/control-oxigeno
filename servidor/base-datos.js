@@ -82,6 +82,19 @@ const ESQUEMA = [
      entidad_id TEXT NOT NULL,
      accion TEXT NOT NULL
    )`,
+  // Archivos adjuntos (p. ej. la referencia médica en PDF o foto). Se guardan
+  // aparte para que no viajen con cada sincronización de pacientes.
+  `CREATE TABLE IF NOT EXISTS documentos (
+     id TEXT PRIMARY KEY,
+     paciente_id TEXT,
+     nombre TEXT NOT NULL,
+     tipo TEXT NOT NULL,
+     tamano INTEGER NOT NULL,
+     contenido BLOB NOT NULL,
+     creado TEXT NOT NULL,
+     creado_por TEXT
+   )`,
+  `CREATE INDEX IF NOT EXISTS idx_documentos_paciente ON documentos (paciente_id)`,
   `CREATE INDEX IF NOT EXISTS idx_cilindros_estado ON cilindros (estado)`,
   `CREATE INDEX IF NOT EXISTS idx_cilindros_paciente ON cilindros (paciente_id)`,
   `CREATE INDEX IF NOT EXISTS idx_pacientes_cedula ON pacientes (cedula)`,
@@ -240,6 +253,7 @@ async function aplicarCambios(cambios, usuario) {
   }
   for (const id of validarLista(pacientes.eliminar, "pacientes")) {
     sentencias.push({ sql: "DELETE FROM pacientes WHERE id = ?", args: [String(id)] });
+    sentencias.push({ sql: "DELETE FROM documentos WHERE paciente_id = ?", args: [String(id)] });
     registrar("paciente", id, "eliminar");
   }
 
@@ -384,12 +398,44 @@ async function eliminarUsuario(id) {
 }
 
 // ---------------------------------------------------------------------------
+// Documentos adjuntos
+// ---------------------------------------------------------------------------
+
+async function guardarDocumento(documento) {
+  const base = await obtenerBase();
+  await base.execute({
+    sql: "INSERT INTO documentos (id, paciente_id, nombre, tipo, tamano, contenido, creado, creado_por) VALUES (?, ?, ?, ?, ?, ?, ?, ?)",
+    args: [documento.id, texto(documento.pacienteId), documento.nombre, documento.tipo, documento.tamano, documento.contenido, documento.creado, documento.creadoPor],
+  });
+}
+
+async function leerDocumento(id) {
+  const base = await obtenerBase();
+  const { rows } = await base.execute({ sql: "SELECT nombre, tipo, contenido FROM documentos WHERE id = ?", args: [id] });
+  if (!rows[0]) return null;
+  return { nombre: rows[0].nombre, tipo: rows[0].tipo, contenido: Buffer.from(rows[0].contenido) };
+}
+
+async function eliminarDocumento(id) {
+  const base = await obtenerBase();
+  await base.execute({ sql: "DELETE FROM documentos WHERE id = ?", args: [id] });
+}
+
+// ---------------------------------------------------------------------------
 // Secreto para firmar sesiones: variable de entorno o, si no existe, uno
 // aleatorio guardado en la base.
 // ---------------------------------------------------------------------------
 
+let avisoSecretoTemporal = false;
+
 async function obtenerSecretoSesion(generar) {
   if (process.env.SESION_SECRETO) return process.env.SESION_SECRETO;
+  // En Vercel sin Turso la base vive en /tmp: cada reinicio crea un secreto nuevo
+  // y todas las sesiones abiertas se cierran.
+  if (EN_VERCEL && usaArchivoLocal() && !avisoSecretoTemporal) {
+    avisoSecretoTemporal = true;
+    console.warn("Falta SESION_SECRETO: las sesiones se cerrarán cada vez que Vercel reinicie la función.");
+  }
   const base = await obtenerBase();
   let secreto = await leerMeta(base, "secreto_sesion");
   if (!secreto) {
@@ -416,5 +462,8 @@ module.exports = {
   crearUsuario,
   actualizarUsuario,
   eliminarUsuario,
+  guardarDocumento,
+  leerDocumento,
+  eliminarDocumento,
   obtenerSecretoSesion,
 };

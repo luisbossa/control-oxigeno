@@ -31,8 +31,9 @@ DATOS
 La informacion se guarda en SQLite:  datos/oxigeno.db
 
 Tablas: pacientes, cilindros, ubicaciones (EBAIS, ambulancias, emergencias,
-manifold), devoluciones_proveedor, usuarios, notificaciones_leidas y bitacora
-(registro de quien guardo o elimino cada dato y cuando).
+manifold), devoluciones_proveedor, usuarios, notificaciones_leidas, bitacora
+(registro de quien guardo o elimino cada dato y cuando) y documentos (PDF o
+foto de la referencia medica de cada paciente, maximo 3 MB por archivo).
 
 Respaldos automaticos cada 30 minutos en respaldos/oxigeno-<fecha>.db
 (se conservan los ultimos 30). Para restaurar uno: detenga el servidor, copielo
@@ -99,6 +100,7 @@ public/                Todo lo que ve el navegador
     intercambio.js       Intercambio, boletas de salida, prestamo y devolucion
     inventario.js        Bodegas de llenos y vacios, devolucion al proveedor
     nuevo-paciente.js    Registro y edicion de pacientes
+    referencia-medica.js PDF o foto de la referencia medica (opcional)
     nuevo-cilindro.js    Registro y edicion de cilindros
     exportar-historial.js Exportar historial del paciente
     utilidades.js        Funciones de apoyo (fechas, formatos)

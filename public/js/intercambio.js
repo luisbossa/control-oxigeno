@@ -895,14 +895,10 @@ function confirmarTransaccion() {
     );
 
 
+    // La boleta de salida se genera desde el historial del paciente.
     const pacienteIdRegistrado = pacienteSeleccionado.id;
-    const fechaRegistroBoleta = nuevoRegistro.fecha;
     limpiarIntercambio();
     abrirPaciente(pacienteIdRegistrado);
-
-    if (confirm("¿Desea abrir ahora la boleta de salida para imprimirla o guardarla como PDF?")) {
-        imprimirBoletaSalida(pacienteIdRegistrado, encodeURIComponent(fechaRegistroBoleta));
-    }
 
 }
 

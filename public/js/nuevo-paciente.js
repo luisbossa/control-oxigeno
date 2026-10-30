@@ -13,37 +13,141 @@ function agregarCilindroPacienteFormulario(numeroSeleccionado = "") {
     const contenedor = document.getElementById("filasCilindrosPaciente");
     if (!contenedor) return;
 
-    const pacienteEditado = pacientes.find(p => p.id === pacienteEnEdicionId);
-    const actuales = pacienteEditado?.cilindros || [];
-    const opciones = cilindros.filter(c =>
-        c.estado === "Disponible" || actuales.includes(c.numero) || c.numero === numeroSeleccionado
-    );
+    const seleccionado = cilindros.find(c => c.numero === numeroSeleccionado);
 
     contenedor.insertAdjacentHTML("beforeend", `
         <div class="fila-cilindro-paciente border-2 border-blue-200 bg-blue-50/50 rounded-xl p-4">
             <div class="flex items-start justify-between gap-3 mb-3">
-                <div><p class="font-black text-blue-950">Cilindro en préstamo</p><p class="text-xs text-slate-500">Seleccione un cilindro lleno disponible.</p></div>
+                <div><p class="font-black text-blue-950">Cilindro en préstamo</p><p class="text-xs text-slate-500">Digite el número para buscar un cilindro lleno disponible.</p></div>
                 <button type="button" onclick="this.closest('.fila-cilindro-paciente').remove(); actualizarMensajesEquiposPaciente()" class="text-red-600 font-extrabold text-sm">Quitar</button>
             </div>
-            <select data-campo="cilindro" onchange="mostrarDetalleCilindroPacienteFormulario(this)" class="w-full border-2 border-blue-300 rounded-xl px-4 py-3 bg-white font-bold">
-                <option value="">Seleccione un cilindro...</option>
-                ${opciones.map(c => `<option value="${textoSeguro(c.numero)}" ${c.numero === numeroSeleccionado ? "selected" : ""}>${textoSeguro(c.numero)} · ${tamanoCilindro(c)} · ${textoSeguro(c.tipo)}${actuales.includes(c.numero) ? " · Actualmente asignado" : ""}</option>`).join("")}
-            </select>
+            <div class="buscador-cilindro">
+                <svg class="icono buscador-cilindro-icono" aria-hidden="true"><use href="img/iconos.svg#search"></use></svg>
+                <input type="text" data-buscador-cilindro value="${seleccionado ? textoSeguro(etiquetaCilindroBuscador(seleccionado)) : ""}"
+                    placeholder="Buscar por número de cilindro..." autocomplete="off" spellcheck="false"
+                    role="combobox" aria-autocomplete="list" aria-expanded="false" aria-label="Buscar cilindro"
+                    oninput="filtrarBuscadorCilindro(this, true)" onfocus="filtrarBuscadorCilindro(this)" onclick="filtrarBuscadorCilindro(this)"
+                    onkeydown="teclaBuscadorCilindro(event, this)" onblur="cerrarBuscadorCilindro(this)"
+                    class="w-full border-2 border-blue-300 rounded-xl pl-11 pr-4 py-3 bg-white font-bold">
+                <input type="hidden" data-campo="cilindro" value="${seleccionado ? textoSeguro(seleccionado.numero) : ""}">
+                <ul class="buscador-cilindro-lista" role="listbox" hidden></ul>
+            </div>
             <div data-detalle class="mt-3 text-xs font-bold text-blue-900"></div>
         </div>`);
 
     const fila = contenedor.lastElementChild;
     mostrarDetalleCilindroPacienteFormulario(fila.querySelector('[data-campo="cilindro"]'));
     actualizarMensajesEquiposPaciente();
+    if (!numeroSeleccionado) fila.querySelector("[data-buscador-cilindro]").focus();
 }
 
-function mostrarDetalleCilindroPacienteFormulario(select) {
-    const cilindro = cilindros.find(c => c.numero === select.value);
-    const detalle = select.closest(".fila-cilindro-paciente")?.querySelector("[data-detalle]");
+function mostrarDetalleCilindroPacienteFormulario(campo) {
+    const cilindro = cilindros.find(c => c.numero === campo.value);
+    const detalle = campo.closest(".fila-cilindro-paciente")?.querySelector("[data-detalle]");
     if (!detalle) return;
     detalle.textContent = cilindro
         ? `Tipo: ${cilindro.tipo} · Recibido del proveedor: ${formatearFecha(cilindro.fechaRecepcion)} · Cambio programado: ${formatearFecha(cilindro.fechaCambio)}`
         : "";
+}
+
+/* ---------------------------------------------------------
+   Buscador de cilindros del formulario
+   Muestra los cilindros llenos disponibles (y los que ya tiene
+   el paciente en edición) que coinciden con lo digitado.
+--------------------------------------------------------- */
+
+function etiquetaCilindroBuscador(cilindro) {
+    return `${cilindro.numero} · ${tamanoCilindro(cilindro)} · ${cilindro.tipo}`;
+}
+
+function opcionesBuscadorCilindro(entrada) {
+    const actuales = pacientes.find(p => p.id === pacienteEnEdicionId)?.cilindros || [];
+    const propio = entrada.parentElement.querySelector('[data-campo="cilindro"]').value;
+    // Un cilindro elegido en otra fila no se vuelve a ofrecer.
+    const usados = [...document.querySelectorAll('#filasCilindrosPaciente [data-campo="cilindro"]')]
+        .map(campo => campo.value).filter(numero => numero && numero !== propio);
+    return cilindros.filter(c =>
+        (c.estado === "Disponible" || actuales.includes(c.numero) || c.numero === propio) && !usados.includes(c.numero)
+    );
+}
+
+function filtrarBuscadorCilindro(entrada, escribiendo = false) {
+    const campo = entrada.parentElement.querySelector('[data-campo="cilindro"]');
+    const lista = entrada.parentElement.querySelector(".buscador-cilindro-lista");
+    // Al escribir se descarta la selección anterior hasta elegir otra.
+    if (escribiendo && campo.value) {
+        campo.value = "";
+        mostrarDetalleCilindroPacienteFormulario(campo);
+    }
+
+    const termino = (campo.value ? "" : entrada.value).trim().toLowerCase();
+    const actuales = pacientes.find(p => p.id === pacienteEnEdicionId)?.cilindros || [];
+    const resultados = opcionesBuscadorCilindro(entrada)
+        .filter(c => !termino || String(c.numero).toLowerCase().includes(termino) || String(c.tipo || "").toLowerCase().includes(termino))
+        .sort((a, b) => Number(!String(a.numero).toLowerCase().startsWith(termino)) - Number(!String(b.numero).toLowerCase().startsWith(termino))
+            || String(a.numero).localeCompare(String(b.numero), "es", { numeric: true }));
+
+    lista.innerHTML = resultados.length
+        ? resultados.slice(0, 50).map((c, indice) => `
+            <li role="option" data-numero="${textoSeguro(c.numero)}" class="buscador-cilindro-opcion${indice === 0 ? " activa" : ""}"
+                onmousedown="event.preventDefault(); elegirCilindroBuscador(this)">
+                <strong>${textoSeguro(c.numero)}</strong>
+                <span>${textoSeguro(tamanoCilindro(c))} · ${textoSeguro(c.tipo)}${actuales.includes(c.numero) ? " · Actualmente asignado" : ""}</span>
+            </li>`).join("")
+        : `<li class="buscador-cilindro-vacio">No hay cilindros disponibles${termino ? ` que coincidan con "${textoSeguro(termino)}"` : ""}.</li>`;
+    lista.hidden = false;
+    entrada.setAttribute("aria-expanded", "true");
+}
+
+function elegirCilindroBuscador(opcion) {
+    const contenedor = opcion.closest(".buscador-cilindro");
+    const cilindro = cilindros.find(c => c.numero === opcion.dataset.numero);
+    const entrada = contenedor.querySelector("[data-buscador-cilindro]");
+    const campo = contenedor.querySelector('[data-campo="cilindro"]');
+    campo.value = cilindro?.numero || "";
+    entrada.value = cilindro ? etiquetaCilindroBuscador(cilindro) : "";
+    contenedor.querySelector(".buscador-cilindro-lista").hidden = true;
+    entrada.setAttribute("aria-expanded", "false");
+    mostrarDetalleCilindroPacienteFormulario(campo);
+}
+
+function teclaBuscadorCilindro(event, entrada) {
+    const lista = entrada.parentElement.querySelector(".buscador-cilindro-lista");
+    const opciones = [...lista.querySelectorAll(".buscador-cilindro-opcion")];
+    const actual = opciones.findIndex(opcion => opcion.classList.contains("activa"));
+
+    if (event.key === "ArrowDown" || event.key === "ArrowUp") {
+        event.preventDefault();
+        if (lista.hidden) return filtrarBuscadorCilindro(entrada);
+        if (!opciones.length) return;
+        const siguiente = (actual + (event.key === "ArrowDown" ? 1 : -1) + opciones.length) % opciones.length;
+        opciones.forEach((opcion, i) => opcion.classList.toggle("activa", i === siguiente));
+        opciones[siguiente].scrollIntoView({ block: "nearest" });
+    } else if (event.key === "Enter") {
+        // Enter elige el resaltado y no envía el formulario.
+        event.preventDefault();
+        if (!lista.hidden && opciones[Math.max(actual, 0)]) elegirCilindroBuscador(opciones[Math.max(actual, 0)]);
+    } else if (event.key === "Escape" && !lista.hidden) {
+        event.stopPropagation();
+        lista.hidden = true;
+        entrada.setAttribute("aria-expanded", "false");
+    }
+}
+
+function cerrarBuscadorCilindro(entrada) {
+    const contenedor = entrada.parentElement;
+    const campo = contenedor.querySelector('[data-campo="cilindro"]');
+    // Si se digitó el número exacto sin elegirlo de la lista, se toma igual.
+    if (!campo.value && entrada.value.trim()) {
+        const exacto = opcionesBuscadorCilindro(entrada).find(c => String(c.numero).toLowerCase() === entrada.value.trim().toLowerCase());
+        if (exacto) {
+            campo.value = exacto.numero;
+            entrada.value = etiquetaCilindroBuscador(exacto);
+            mostrarDetalleCilindroPacienteFormulario(campo);
+        }
+    }
+    contenedor.querySelector(".buscador-cilindro-lista").hidden = true;
+    entrada.setAttribute("aria-expanded", "false");
 }
 
 function agregarReguladorPacienteFormulario(regulador = {}) {
@@ -168,6 +272,7 @@ function abrirNuevoPaciente() {
     document.getElementById("nuevoPacienteNombre").value = "";
     document.getElementById("nuevoPacienteCedula").value = "";
     document.getElementById("nuevoPacienteReferencia").value = "";
+    prepararDocumentoReferencia();
     cargarDatosPrestamoFormulario();
     document.getElementById("filasCilindrosPaciente").innerHTML = "";
     document.getElementById("filasReguladoresPaciente").innerHTML = "";
@@ -195,6 +300,7 @@ function cerrarModalPaciente() {
         .classList.remove("flex");
 
     pacienteEnEdicionId = null;
+    descartarArchivoNuevoReferencia();
 
 }
 
@@ -210,6 +316,7 @@ function editarPaciente(id) {
     document.getElementById("nuevoPacienteNombre").value = paciente.nombre || "";
     document.getElementById("nuevoPacienteCedula").value = paciente.cedula || "";
     document.getElementById("nuevoPacienteReferencia").value = paciente.referencia || "";
+    prepararDocumentoReferencia(paciente);
     cargarDatosPrestamoFormulario(paciente);
     document.getElementById("filasCilindrosPaciente").innerHTML = "";
     document.getElementById("filasReguladoresPaciente").innerHTML = "";
@@ -220,14 +327,32 @@ function editarPaciente(id) {
     document.getElementById("modalPaciente").classList.add("flex");
 }
 
-function guardarPaciente() {
+// Sube la referencia adjunta (si hay) con el botón Guardar bloqueado.
+async function subirReferenciaConBoton(pacienteId) {
+    const boton = document.getElementById("botonGuardarPaciente");
+    const texto = boton.textContent;
+    boton.disabled = true;
+    boton.textContent = "Subiendo referencia...";
+    try {
+        return { documento: await subirDocumentoReferencia(pacienteId) };
+    } catch (error) {
+        mostrarPopup(`No se pudo subir la referencia médica: ${error.message}`, "error");
+        return null;
+    } finally {
+        boton.disabled = false;
+        boton.textContent = texto;
+    }
+}
+
+async function guardarPaciente() {
     if (!exigirPermisoEdicion()) return;
     if (pacienteEnEdicionId === null) {
-        guardarNuevoPaciente();
+        await guardarNuevoPaciente();
         return;
     }
 
-    const paciente = pacientes.find(p => p.id === pacienteEnEdicionId);
+    const pacienteId = pacienteEnEdicionId;
+    let paciente = pacientes.find(p => p.id === pacienteId);
     if (!paciente) return;
     const nombre = document.getElementById("nuevoPacienteNombre").value.trim();
     const cedula = document.getElementById("nuevoPacienteCedula").value.trim();
@@ -248,14 +373,23 @@ function guardarPaciente() {
         return;
     }
 
+    const adjunto = await subirReferenciaConBoton(pacienteId);
+    if (!adjunto) return;
+    // Los datos pudieron refrescarse mientras se subía el archivo.
+    paciente = pacientes.find(p => p.id === pacienteId);
+    if (!paciente) return;
+    const documentoAnterior = paciente.referenciaDocumento || null;
+
     paciente.nombre = nombre;
     paciente.cedula = cedula;
     paciente.referencia = referencia;
+    paciente.referenciaDocumento = adjunto.documento;
     Object.assign(paciente, leerDatosPrestamoFormulario());
     actualizarAsignacionCilindrosPaciente(paciente, equipos.cilindros);
     paciente.reguladores = equipos.reguladores;
     sincronizarReguladorLegacy(paciente);
     guardarDatos();
+    eliminarDocumentoReferenciaAnterior(documentoAnterior, adjunto.documento);
     cerrarModalPaciente();
     renderPacientes();
     alert("Paciente actualizado correctamente.");
@@ -285,7 +419,7 @@ async function eliminarPaciente(id) {
 }
 
 
-function guardarNuevoPaciente() {
+async function guardarNuevoPaciente() {
 
     const nombre =
         document.getElementById("nuevoPacienteNombre")
@@ -333,15 +467,21 @@ function guardarNuevoPaciente() {
     }
 
 
+    const id = Date.now();
+    const adjunto = await subirReferenciaConBoton(id);
+    if (!adjunto) return;
+
     const nuevoPaciente = {
 
-        id: Date.now(),
+        id,
 
         nombre: nombre,
 
         cedula: cedula,
 
         referencia: referencia,
+
+        referenciaDocumento: adjunto.documento,
 
         ...leerDatosPrestamoFormulario(),
 

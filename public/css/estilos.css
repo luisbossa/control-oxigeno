@@ -334,6 +334,156 @@ input:focus, select:focus, textarea:focus {
 ========================================================= */
 .modal-bg { background: rgba(17, 16, 15, 0.42); }
 
+/* La caja del modal siempre cabe en la pantalla (el fondo tiene p-4 = 1rem por
+   lado). Si el contenido es más alto, se desplaza dentro de la caja y el
+   encabezado y la fila de botones quedan fijos arriba y abajo. */
+.modal-bg > * {
+    max-height: calc(100dvh - 2rem);
+    margin-block: 0;
+    overflow-y: auto;
+    overscroll-behavior: contain;
+}
+
+.modal-bg > * > [class*="border-b"] {
+    position: sticky;
+    top: 0;
+    z-index: 2;
+    background: var(--superficie);
+}
+
+.modal-bg > * > [class*="border-t"]:last-child {
+    position: sticky;
+    bottom: 0;
+    z-index: 2;
+    background: var(--superficie);
+}
+
+/* Referencia médica adjunta (formulario de paciente). */
+.referencia-adjunto { margin-top: 0.75rem; }
+
+.referencia-adjunto-acciones {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: 0.75rem;
+    padding: 0.85rem 1rem;
+    border: 1.5px dashed var(--linea-fuerte);
+    border-radius: 10px;
+    background: var(--papel);
+}
+
+.referencia-adjunto-archivo {
+    display: flex;
+    align-items: center;
+    gap: 0.85rem;
+    padding: 0.7rem 0.85rem;
+    border: 1px solid var(--azul-borde);
+    border-radius: 10px;
+    background: var(--azul-claro);
+}
+
+.referencia-adjunto-miniatura {
+    width: 48px;
+    height: 48px;
+    flex-shrink: 0;
+    display: grid;
+    place-items: center;
+    overflow: hidden;
+    border-radius: 8px;
+    border: 1px solid var(--azul-borde);
+    background: var(--superficie);
+    color: var(--azul);
+    font-size: 1.4rem;
+}
+.referencia-adjunto-miniatura img { width: 100%; height: 100%; object-fit: cover; }
+
+.referencia-adjunto-nombre {
+    font-weight: 600;
+    font-size: 0.9rem;
+    color: var(--tinta);
+    overflow: hidden;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+}
+.referencia-adjunto-texto { font-size: 0.8rem; color: var(--tinta-tenue); }
+.referencia-adjunto-quitar:hover { color: var(--rojo); border-color: #f2cfcc; background: #fcefee; }
+
+.camara-referencia-video {
+    width: 100%;
+    max-height: 60dvh;
+    border-radius: 10px;
+    background: #111;
+    object-fit: contain;
+}
+
+/* Buscador de cilindros (formulario de paciente). */
+.buscador-cilindro { position: relative; }
+
+.buscador-cilindro-icono {
+    position: absolute;
+    left: 0.95rem;
+    top: 50%;
+    transform: translateY(-50%);
+    color: var(--tinta-tenue);
+    font-size: 1.05rem;
+    pointer-events: none;
+}
+
+.buscador-cilindro input:focus { outline: none; border-color: var(--azul); box-shadow: 0 0 0 3px var(--azul-claro); }
+
+.buscador-cilindro-lista {
+    position: absolute;
+    left: 0;
+    right: 0;
+    top: calc(100% + 6px);
+    z-index: 5;
+    max-height: 16rem;
+    overflow-y: auto;
+    padding: 0.35rem;
+    background: var(--superficie);
+    border: 1px solid var(--azul-borde);
+    border-radius: 12px;
+    box-shadow: 0 14px 30px rgb(0 0 0 / 0.14);
+}
+
+.buscador-cilindro-opcion {
+    display: flex;
+    align-items: baseline;
+    gap: 0.75rem;
+    padding: 0.6rem 0.75rem;
+    border-radius: 8px;
+    cursor: pointer;
+    font-size: 0.92rem;
+}
+.buscador-cilindro-opcion strong { font-weight: 700; color: var(--tinta); }
+.buscador-cilindro-opcion span { color: var(--tinta-suave); font-size: 0.82rem; }
+.buscador-cilindro-opcion:hover,
+.buscador-cilindro-opcion.activa { background: var(--azul-claro); }
+.buscador-cilindro-opcion.activa strong { color: var(--azul-oscuro); }
+
+.buscador-cilindro-vacio { padding: 0.75rem; color: var(--tinta-tenue); font-size: 0.88rem; }
+
+/* Barra de desplazamiento personalizada. */
+.buscador-cilindro-lista::-webkit-scrollbar { width: 10px; }
+.buscador-cilindro-lista::-webkit-scrollbar-thumb {
+    background: var(--azul-borde);
+    border: 3px solid var(--superficie);
+    border-radius: 999px;
+}
+.modal-bg > *::-webkit-scrollbar { width: 12px; }
+.modal-bg > *::-webkit-scrollbar-track { background: transparent; margin-block: 14px; }
+.modal-bg > *::-webkit-scrollbar-thumb {
+    background: var(--azul-borde);
+    border: 3px solid var(--superficie);
+    border-radius: 999px;
+}
+.modal-bg > *::-webkit-scrollbar-thumb:hover { background: var(--azul); }
+
+@supports not selector(::-webkit-scrollbar) {
+    .modal-bg > * { scrollbar-width: thin; scrollbar-color: var(--azul-borde) transparent; }
+}
+
 /* =========================================================
    AVISOS Y CONFIRMACIONES
 ========================================================= */

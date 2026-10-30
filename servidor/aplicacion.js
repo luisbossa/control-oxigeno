@@ -54,6 +54,17 @@ function leerCuerpo(req) {
   });
 }
 
+// Documentos adjuntos: PDF o imagen de hasta 3 MB (Vercel limita el cuerpo de
+// la solicitud a 4,5 MB y el archivo llega en base64). El tipo se comprueba por
+// los primeros bytes del archivo, no por lo que declara el navegador.
+const TAMANO_MAXIMO_DOCUMENTO = 3 * 1024 * 1024;
+const FIRMAS_DOCUMENTO = {
+  "application/pdf": (b) => b.subarray(0, 5).toString("latin1") === "%PDF-",
+  "image/jpeg": (b) => b[0] === 0xff && b[1] === 0xd8 && b[2] === 0xff,
+  "image/png": (b) => b.subarray(0, 8).equals(Buffer.from([0x89, 0x50, 0x4e, 0x47, 0x0d, 0x0a, 0x1a, 0x0a])),
+  "image/webp": (b) => b.subarray(0, 4).toString("latin1") === "RIFF" && b.subarray(8, 12).toString("latin1") === "WEBP",
+};
+
 async function exigirSesion(req, res, soloAdministrador = false) {
   const usuario = await auth.sesionActual(req, res);
   if (!usuario) throw errorHttp(401, "La sesión venció. Ingrese nuevamente.");
@@ -165,7 +176,54 @@ const rutas = {
     await db.crearUsuario(nuevo);
     return { usuario: auth.usuarioPublico(nuevo) };
   },
+
+  "POST /api/documentos": async (req, res) => {
+    const usuario = await exigirSesion(req, res, true);
+    const cuerpo = await leerCuerpo(req);
+    const tipo = String(cuerpo.tipo || "");
+    const firma = FIRMAS_DOCUMENTO[tipo];
+    if (!firma) throw errorHttp(400, "Solo se permiten archivos PDF o imágenes (JPG, PNG o WebP).");
+    const contenido = Buffer.from(String(cuerpo.contenido || ""), "base64");
+    if (!contenido.length) throw errorHttp(400, "El archivo está vacío.");
+    if (contenido.length > TAMANO_MAXIMO_DOCUMENTO) throw errorHttp(413, "El archivo supera el máximo de 3 MB.");
+    if (!firma(contenido)) throw errorHttp(400, "El contenido del archivo no corresponde a un PDF o imagen válida.");
+    const documento = {
+      id: crypto.randomUUID(),
+      pacienteId: cuerpo.pacienteId ?? null,
+      nombre: String(cuerpo.nombre || "documento").replace(/[\\/:*?"<>|\u0000-\u001f]/g, "_").slice(0, 120),
+      tipo,
+      tamano: contenido.length,
+      contenido,
+      creado: new Date().toISOString(),
+      creadoPor: usuario.id,
+    };
+    await db.guardarDocumento(documento);
+    return { documento: { id: documento.id, nombre: documento.nombre, tipo, tamano: documento.tamano, creado: documento.creado } };
+  },
 };
+
+// Rutas con parámetro: /api/documentos/:id
+async function rutaDocumento(req, res, id) {
+  if (req.method === "GET") {
+    await exigirSesion(req, res);
+    const documento = await db.leerDocumento(id);
+    if (!documento) throw errorHttp(404, "Documento no encontrado.");
+    res.statusCode = 200;
+    res.setHeader("Content-Type", documento.tipo);
+    res.setHeader("Content-Length", documento.contenido.length);
+    res.setHeader("Content-Disposition", `inline; filename*=UTF-8''${encodeURIComponent(documento.nombre)}`);
+    res.setHeader("X-Content-Type-Options", "nosniff");
+    res.setHeader("Cache-Control", "private, no-store");
+    res.end(documento.contenido);
+    return undefined;
+  }
+  if (req.method === "DELETE") {
+    await exigirSesion(req, res, true);
+    await db.eliminarDocumento(id);
+    return { ok: true };
+  }
+  throw errorHttp(405, "Método no permitido.");
+}
 
 // Rutas con parámetro: /api/usuarios/:id
 async function rutaUsuario(req, res, id) {
@@ -215,11 +273,14 @@ async function manejarAPI(req, res) {
     let resultado;
     if (manejador) resultado = await manejador(req, res, url);
     else {
-      const coincidencia = ruta.match(/^\/api\/usuarios\/([^/]+)$/);
-      if (!coincidencia) throw errorHttp(404, "Ruta no encontrada.");
-      resultado = await rutaUsuario(req, res, decodeURIComponent(coincidencia[1]));
+      const usuario = ruta.match(/^\/api\/usuarios\/([^/]+)$/);
+      const documento = ruta.match(/^\/api\/documentos\/([^/]+)$/);
+      if (usuario) resultado = await rutaUsuario(req, res, decodeURIComponent(usuario[1]));
+      else if (documento) resultado = await rutaDocumento(req, res, decodeURIComponent(documento[1]));
+      else throw errorHttp(404, "Ruta no encontrada.");
     }
-    responderJSON(res, 200, resultado);
+    // Las rutas que entregan un archivo ya respondieron.
+    if (!res.writableEnded) responderJSON(res, 200, resultado);
   } catch (error) {
     if (!error.estado) console.error(error);
     if (!res.headersSent)
